@@ -1,4 +1,4 @@
-# infonet_wireshar_dissector
+# infonet_wireshark_dissector
 This plugin parses UDP packets from Infonet protocol
 
 A Wireshark Dissector for infonet UDP Packets written in LUA
