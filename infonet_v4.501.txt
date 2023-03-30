@@ -1,0 +1,4144 @@
+Nota Tecnica 
+
+ 
+
+Linee Guida Rete Veicolare di Bordo 
+e Protocollo Scambio Dati 
+
+per le flotte di Trasporto Pubblico della Regione Piemonte 
+
+ 
+
+Doc_ID 
+
+n.a. 
+
+Versione 
+
+4.501 r.5 
+
+Riassunto 
+
+Il presente documento riporta le line guida per la realizzazione di 
+una rete veicolare di bordo unica per le flotte del trasporto pubblico 
+regionale ed interregionale, ed il protocollo di scambio dati tra gli 
+apparati imbarcati. 
+
+Numero di pagine 
+
+37 
+
+ 
+
+ 
+
+ 
+
+Nome 
+
+Ruolo 
+
+Data 
+
+Autore 
+
+Davide Gastaldi 
+
+ 
+
+ 
+
+Revisione 
+
+Antonio Giglio 
+
+ 
+
+ 
+
+Revisione 
+
+ 
+
+ 
+
+ 
+
+Approvazione 
+
+Fabrizio Arneodo 
+
+ 
+
+ 
+
+
+
+ 
+
+ 
+
+
+Indice 
+1 INTRODUZIONE ............................................................................................................ 5 
+1.1 Storia del documento .............................................................................................. 5 
+1.2 Definizioni ed acronimi ............................................................................................ 6 
+1.3 Documenti di riferimento ......................................................................................... 7 
+2 ARCHITETTURA............................................................................................................ 8 
+2.1 Piano di Indirizzamento ........................................................................................... 8 
+2.2 Servizi di bordo ....................................................................................................... 8 
+2.3 Relazione con gli standard internazionali ................................................................ 8 
+3 MODALITÀ DI SCAMBIO DATI .....................................................................................10 
+3.1 Struttura dati ..........................................................................................................10 
+3.2 Tipologie di dato .....................................................................................................11 
+4 CONTENUTO INFORMATIVO ......................................................................................12 
+4.1 pacchetto VOID (esempio) .....................................................................................12 
+4.2 pacchetti INFO_NET ed INFO_NET2 .....................................................................12 
+4.2.1 Preambolo .......................................................................................................13 
+4.2.2 Struttura dati INFO_NET .................................................................................13 
+4.2.3 Struttura dati INFO_NET2 ...............................................................................14 
+4.2.4 ORG/DST ........................................................................................................15 
+4.2.5 LEN .................................................................................................................15 
+4.2.6 ID_MSG/VER ..................................................................................................15 
+4.2.7 DATETIME ......................................................................................................15 
+4.2.8 DOORS ...........................................................................................................15 
+4.2.9 FIX ..................................................................................................................16 
+4.2.10 LATITUDE/LONGITUDE .................................................................................16 
+4.2.11 SPEED ............................................................................................................16 
+4.2.12 LOC ................................................................................................................16 
+4.2.13 LINE ................................................................................................................17 
+4.2.14 SHIFT .............................................................................................................17 
+4.2.15 DEST ..............................................................................................................17 
+4.2.16 CURRENT ......................................................................................................17 
+4.2.17 NEXT ..............................................................................................................17 
+4.2.18 AREA ..............................................................................................................17 
+4.2.18bis Nota sull’interpretazione dell’area di fermata ............................................18 
+4.2.19 VEHICLE .........................................................................................................19 
+4.2.20 DIRECTION ....................................................................................................19 
+4.2.21 DRIVER ..........................................................................................................19 
+4.2.22 COMPANY ......................................................................................................20 
+4.2.23 AVM ................................................................................................................20 
+4.2.24 STATUS (opzionale) .......................................................................................20 
+4.2.25 TIMING (opzionale) .........................................................................................21 
+4.2.26 TRIP ................................................................................................................21 
+4.3 pacchetti INFO_BIP ed INFO_BIP2 ........................................................................21 
+4.3.1 Preambolo .......................................................................................................21 
+4.3.2 Struttura dati INFO_BIP / INFO_BIP2 .............................................................21 
+4.3.3 DATETIME ......................................................................................................22 
+4.3.4 APPLMODE ....................................................................................................23 
+4.3.5 APPLSTATUS .................................................................................................23 
+4.3.6 SERVICESTATUS ..........................................................................................23 
+4.3.7 CNVSTATUS ..................................................................................................24 
+4.3.8 LOCALITYVALUE ...........................................................................................24 
+4.3.9 MESSAGEMODE ............................................................................................24 
+4.3.10 MESSAGETEXT .............................................................................................24 
+4.3.11 LATITUDE/LONGITUDE/FIX ...........................................................................24 
+4.3.12 GPS/GPRS/WIFI SIGNAL LEVEL ...................................................................24 
+4.3.13 IPLINKSTATUS ...............................................................................................24 
+4.3.14 LOCALITYCODEBIP .......................................................................................25 
+4.3.15 LOCALITYDESCRIPTIONBIP .........................................................................25 
+4.3.16 LINECODEBIP ................................................................................................25 
+4.3.17 LINEDESCRIPTIONBIP ..................................................................................25 
+4.4 pacchetto CMD_BIP ...............................................................................................25 
+4.4.1 Preambolo .......................................................................................................25 
+4.4.2 Struttura dati CMD_BIP ...................................................................................26 
+4.4.3 COMMANDTYPE e COMMANDVALUE ..........................................................26 
+4.5 pacchetto INFO_PAX .............................................................................................26 
+4.5.1 Preambolo .......................................................................................................26 
+4.5.2 Struttura dati ...................................................................................................27 
+4.5.3 TIMESTAMP ...................................................................................................27 
+4.5.4 DOORSTATUS ...............................................................................................27 
+4.5.5 DOORID..........................................................................................................28 
+4.5.6 CURRENT ......................................................................................................28 
+4.5.7 VEHICLE .........................................................................................................28 
+4.5.8 PAXIN/PAXOUT ..............................................................................................28 
+4.5.9 PAXONBOARD ...............................................................................................29 
+4.5.10 SENSORTYPE................................................................................................29 
+4.5.11 SENSORID .....................................................................................................29 
+4.5.12 NUM ................................................................................................................29 
+4.5.13 VALUE ............................................................................................................30 
+4.5.14 APPSTATUS ...................................................................................................30 
+4.5.15 SENSORSTATUS ...........................................................................................30 
+5 SERVIZI DI BORDO ......................................................................................................31 
+5.1 Time server (raccomandato) ..................................................................................31 
+5.2 Gateway/router .......................................................................................................31 
+APPENDICE: PIANO DI INDIRIZZAMENTO ........................................................................33 
+APPENDICE: CODICI AZIENDE TPL BIP ............................................................................35 
+APPENDICE: REGOLE DI ROUTING ..................................................................................37 
+
+
+ATTENZIONE: il presente documento è in costante evoluzione ed aggiornamento. Prima di 
+intraprendere qualunque sviluppo o configurazione, raccomandiamo di richiedere la versione 
+più recente via mail all’indirizzo retedibordo@5t.torino.it. 
+
+ 
+
+
+1 Introduzione 
+
+La prima versione di questo documento e del protocollo per lo scambio dati sulla rete di bordo 
+risale all’anno 2008. Allora come oggi, le flotte di trasporto pubblico si componevano di 
+centinaia di veicoli, differenti per caratteristiche e fornitura, adibiti all’esercizio su aree urbane 
+e suburbane, e più in generale su reti di trasporto regionali ed interregionali. 
+
+Se nel 2008 l’esigenza di far convivere sempre più numerosi dispositivi digitali intelligenti 
+appariva di crescente importanza a bordo dei veicoli, oggi tale aspetto è ormai consolidato ed 
+il concetto di “rete di bordo” risulta largamente accettato ad adottato, anche a fronte delle 
+esperienze e dei progetti europei (quali EBSF ed EBSF2) che negli anni si sono succeduti. 
+
+Oggi come allora, la necessità di disporre di una rete di bordo affidabile, che permetta il dialogo 
+reciproco di ciascun dispositivo, presente e futuro, ed un’integrazione semplice ed efficace, 
+rimane pertanto un concetto di primaria importanza; ed il presente documento - con il 
+protocollo e le raccomandazioni in esso contenute - risulta più che mai valido ed attuale. 
+
+1.1 Storia del documento 
+
+Storia del documento 
+
+Versione 
+
+Data 
+
+Autore 
+
+Note 
+
+0.100 
+
+03/2008 
+
+Gastaldi/D’Agata 
+
+Bozza preliminare (sola infoutenza) (aborted) 
+
+2.000 
+
+04/2008 
+
+Gastaldi 
+
+Revisione totale; ridefinizione pacchetto 
+
+2.210 r2 
+
+05/2008 
+
+ 
+
+Pre-release 
+
+2.500 
+
+05/2008 
+
+ 
+
+Release candidate; beta testing 
+
+3.000 r2 
+
+05/2009 
+
+Gastaldi 
+
+Release 
+
+3.100 
+
+05/2009 
+
+Gastaldi 
+
+Release 
+
+4.000 
+
+03/2011 
+
+Gastaldi 
+
+Integrato pacchetto BIP; revisione totale 
+
+4.023 
+
+08/2011 
+
+Gastaldi 
+
+Modificato CommandType (da 33 a 1) 
+
+4.024 
+
+09/2011 
+
+Gastaldi 
+
+Aggiornata tabella codici azienda; correzioni varie 
+
+4.024 r5 
+
+09/2011 
+
+Gastaldi 
+
+Corretto CommandValue par. 4.4.3 (valori invertiti) 
+
+4.100 
+
+12/2011 
+
+Gastaldi 
+
+(bozza) Aggiornato piano di indirizzamento; nuovo 
+paragrafo “servizi di bordo” 
+
+4.201 
+
+04/2012 
+
+Gastaldi 
+
+Aggiornato elenco aziende; aggiunto time-server; 
+correzioni minori 
+
+4.300 
+
+09/2012 
+
+Gastaldi / 
+Domeneghetti 
+
+Integrazione pacchetto INFO_BIP2. 
+
+4.301 
+
+11/2012 
+
+Gastaldi 
+
+Aggiornamento indirizzi IP e regole di routing 
+
+4.30X 
+
+ 
+
+ 
+
+Correzioni minori 
+
+4.310 
+
+09/2015 
+
+AAVV 
+
+Consolidamento generale; aggiunto un elenco degli 
+acronimi; aggiornato elenco aziende. 
+
+4.400 
+
+04/2019 
+
+Gastaldi / 
+Domenighetti 
+
+Corrette dimensioni ed offset di INFO_BIP, 
+INFO_BIP2 e INFO_CMD. Aggiornati elenchi AVM, 
+Aziende, IP dispositivi. 
+
+
+
+
+Storia del documento 
+
+
+
+Versione 
+
+Data 
+
+Autore 
+
+Note 
+
+4.501 
+
+02/2020 
+
+AAVV 
+
+Revisione complessiva. Aggiunto e rivisto pacchetto 
+INFO_PAX ideato da GTT. 
+
+
+
+ 
+
+1.2 Definizioni ed acronimi 
+
+ 
+
+Acronimo 
+
+Definizione 
+
+ASCII 
+
+American Standard Code for Information Interchange 
+
+AVL 
+
+Automatic Vehicle Location (System) 
+
+AVM 
+
+Automatic Vehicle Monitoring (System) 
+
+BIP 
+
+Biglietto Integrato Piemonte 
+
+CDM 
+
+Card Data Model 
+
+CEN 
+
+Comitato Europeo di Normazione 
+
+DHCP 
+
+Dynamic Host Configuration Protocol 
+
+EBSF 
+
+European Bus System of the Future 
+
+ECU 
+
+Electronic Control Unit 
+
+FMS 
+
+Fleet Management Systems (Interface) 
+
+FTP 
+
+File Transfer Protocol 
+
+GPRS 
+
+General Packet Radio Service 
+
+GPS 
+
+Global Positioning System 
+
+GTT 
+
+Gruppo Torinese Trasporti 
+
+http 
+
+Hypertext Transfer Protocol 
+
+ID 
+
+Identificativo 
+
+IEEE 
+
+Institute of Electrical and Electronic Engineers 
+
+IP 
+
+Internet Protocol 
+
+ISTAT 
+
+Istituto Nazionale di Statistica 
+
+ITS 
+
+Intelligent Transport Systems 
+
+LsB 
+
+Least Significant Bit 
+
+NTP 
+
+Network Time Protocol 
+
+NVR 
+
+Network Video Recorder 
+
+OBU 
+
+On-Board Unit 
+
+OTX 
+
+Osservatore Trasporto Extraurbano 
+
+PAX 
+
+Passeggero 
+
+SG 
+
+Sub-Group 
+
+SNTP 
+
+Simple Network Time Protocol 
+
+STP 
+
+Shielded Twisted Pair 
+
+TC 
+
+Technical Commitee 
+
+
+
+
+Acronimo 
+
+Definizione 
+
+TCP 
+
+Transmission Control Protocol 
+
+TS 
+
+Technical Specification 
+
+UDP 
+
+User Datagram Protocol 
+
+UITP 
+
+International Association of Public Transport 
+
+UMTS 
+
+Universal Mobile Telecommunications System 
+
+UTP 
+
+Unshielded Twisterd Pair 
+
+WG 
+
+Working Group 
+
+WGS84 
+
+World Geodetic System 1984 
+
+ 
+
+ 
+
+
+
+1.3 Documenti di riferimento 
+
+Riferimento 
+
+Descrizione 
+
+[1] ......................... CEN/TS 13149 - part 8:2016 - Physical layer for IP communication 
+
+
+[2] ......................... CEN/TS 13149 - part 7:2015 - System and Network Architecture 
+
+
+[3] ......................... 
+
+
+[4] ......................... 
+
+
+[5] ......................... 
+
+
+
+
+ 
+
+
+2 Architettura 
+
+In questo documento si fa esplicito riferimento ad una rete di bordo ethernet IEEE 802.3. 
+
+A bordo del mezzo ciascun dispositivo si troverà dunque all’interno di una rete locale composta 
+da un massimo di 254 apparati connessi tra loro a mezzo di uno o più opportuni switch. Sulla 
+rete potranno o meno essere presenti router e gateway per l’interfacciamento con l’esterno. 
+
+L’ipotesi minima consiste nell’impiego di apparati compatibili 10Base-T e cablaggio 
+conseguente (STP). Non si fanno assunzioni sulla connettorizzazione dei dispositivi, che dovrà 
+essere adeguata all’ambiente veicolare (a tal fine si rimanda alle raccomandazioni di [1]). In 
+generale topologia ed architettura ricalcheranno le consuetudini solitamente adottate nelle 
+comuni reti di calcolatori. 
+
+2.1 Piano di Indirizzamento 
+
+Per precise esigenze di semplificazione delle procedure manutentive e di gestione 
+dell’hardware di bordo, l’indirizzamento IP locale sarà statico e predefinito, con la possibilità di 
+riservare un range di indirizzi per l’assegnazione dinamica in DHCP. 
+
+Per ciascun dispositivo (ed, all’occorrenza, per ciascun produttore) sarà noto ed assegnato a 
+priori l’indirizzo IP sulla rete locale. Sarà compito di 5T mantenere aggiornata l’anagrafica degli 
+apparati presenti a bordo e degli indirizzi univoci ad essi assegnati. In ogni caso ciascun 
+dispositivo dovrà essere facilmente riconfigurabile in caso di future variazioni delle politiche di 
+indirizzamento. 
+
+Nel caso in cui più esemplari di uno stesso apparato possano coesistere a bordo (es. computer 
+AVM su mezzi a doppia cabina), saranno riservati più indirizzi contigui1. 
+
+1 Per i range di indirizzi contigui, si consiglia di assegnare IP via via crescenti all’allontanarsi dalla 
+cabina di guida principale. 
+
+I parametri generici di configurazione comuni a tutti gli apparati, e l’elenco aggiornato dei 
+singoli indirizzi, sono riportati in appendice. 
+
+2.2 Servizi di bordo 
+
+Sulla rete di bordo saranno disponibili alcuni servizi di base (NTP, DHCP ecc) ai quali i vari 
+dispositivi possono appoggiarsi. Per i dettagli si rimanda al paragrafo specifico. 
+
+2.3 Relazione con gli standard internazionali 
+
+La società 5T, autrice del presente documento, partecipa e contribuisce ai gruppi di 
+standardizzazione del Comitato Europeo di Normazione (CEN), con particolare riferimento al 
+Work Group 3 (ITS nel Trasporto Pubblico) del Comitato Tecnico 278. 
+
+
+ 
+
+Le indicazioni riportate nel seguito, in particolare: 
+
+ aderiscono alle raccomandazioni dello standard EN13149, parti 7 ed 8 relativamente 
+all’architettura fisica e logica della rete di bordo, allo spazio di indirizzamento ed ai 
+servizi di base; 
+ sono compatibili con la parte 7 dello standard EN13149 per quanto riguarda il protocollo 
+di trasmissione applicativo (UDP). 
+
+
+
+3 Modalità di scambio dati 
+
+Si definisce una modalità di comunicazione tale per cui i dati di bordo di interesse distribuito 
+(localizzazione, esercizio, allarmi, diagnostica…) possano essere scambiati tra i vari apparati 
+in modo semplice e trasparente, limitando al minimo le necessità di riconfigurazione qualora 
+nuovi dispositivi o tipologie di dato si rendano disponibili in futuro 
+
+Genericamente, la comunicazione sarà pertanto sessionless ed indipendente dagli indirizzi IP 
+di origine e destinazione. La tipologia di trasmissione identificata è di tipo UDP/IP, con invio 
+temporizzato (o ad evento, a seconda della tipologia di dato) di pacchetti in modalità push su 
+indirizzamento broadcast o multicast configurabile. 
+
+Tutti i dispositivi saranno in ascolto sulla rete locale, su porta UDP predefinita, secondo le 
+necessità di ciascuno. L’accettazione e l’interpretazione dei pacchetti ricevuti su tale porta 
+avverrà a livello applicativo secondo le specifiche che seguono. 
+
+Di fatto, in questo modo si instaura sulla rete una comunicazione di tipo “a bus virtuale” dove 
+tutti i dispositivi possono trasmettere e ricevere secondo le proprie esigenze, 
+indipendentemente gli uni dagli altri. 
+
+Gli aspetti di sincronizzazione e collision detection sono demandati al livello di rete e non 
+vengono pertanto considerati in questo documento. 
+
+La frequenza massima di invio da parte di ogni dispositivo è ipotizzata in una volta al secondo. 
+Le dimensioni dei pacchetti sono tali da generare un traffico trascurabile (riferito alla banda 
+trasmissiva a disposizione). Nel seguito sono riassunti i parametri essenziali di configurazione: 
+
+ 
+
+Protocollo 
+
+UDP/IP 
+
+IP destinazione 
+
+broadcast (*.255) 
+
+Porta destinazione 
+
+52000 
+
+
+
+3.1 Struttura dati 
+
+I dispositivi che comunicano secondo le suddette modalità impiegano una convenzione 
+comune per la costruzione dei pacchetti di dati. 
+
+Ciascun pacchetto presenta un header di 11 byte, che definisce la tipologia di dato e la 
+lunghezza complessiva del pacchetto. All’header segue la struttura vera e propria 
+
+La lunghezza massima di un pacchetto è di 255 byte. 
+
+ 
+
+ 
+
+VBus_header
+lengthdata type (10 byte)data packet (variable)
+011011byte:
+header 
+
+
+
+Header 
+
+Dim. 
+
+tipo 
+
+Descrizione 
+
+LENGTH 
+
+1 byte 
+
+unsigned byte 
+
+Dimensioni del pacchetto in byte, incluso header (min 11 - 
+max 255) 
+
+TYPE 
+
+10 byte 
+
+char[10] 
+
+Identificativo di tipologia e struttura dati. Questo campo viene 
+a volte anche indicato come “Mailbox”. 
+
+DATA 
+
+0-244 byte 
+
+struct 
+
+Campo dati a struttura e dimensione variabile in base al tipo. 
+
+
+
+3.2 Tipologie di dato 
+
+La stringa “type”, viene impiegato per identificare la natura e l’interpretazione dei dati contenuti 
+nel pacchetto. 
+
+ 
+
+data type 
+
+Contenuto / 
+applicazione 
+
+Dimensione 
+
+Frequenza 
+di invio 
+
+VOID 
+
+Pacchetto vuoto (esempio) 
+
+11 byte 
+
+n.d. 
+
+INFO_NET 
+
+Esercizio e localizzazione 
+
+77 byte 
+
+1 Hz 
+
+INFO_NET2 
+
+Esercizio e localizzazione avanzato 
+
+101 byte 
+
+1 Hz 
+
+INFO_BIP 
+
+Stato bigliettazione 
+
+73 byte 
+
+1/4s 
+
+INFO_BIP2 
+
+Stato bigliettazione (esteso) 
+
+167 byte 
+
+1/8s 
+
+CMD_BIP 
+
+Comandi bigliettazione 
+
+20 byte 
+
+Ad evento 
+
+INFO_PAX 
+
+Conteggio passeggeri 
+
+78 byte 
+
+Variabile (rif. par. 4.5) 
+
+
+
+ 
+
+NB: il tipo di dato “VOID” è usato solo a fini di esempio e test e può essere ignorato a livello 
+applicativo. 
+
+
+4 Contenuto informativo 
+
+Nel seguito viene descritta la struttura ed il contenuto informativo dei pacchetti dati. 
+
+Per la definizione delle tipologie elementari (qui riportate per comodità), ci si riferisce 
+all’implementazione C++ su piattaforma Intel32. La trasmissione avviene sempre in modalità 
+little-endian (LsB per primo). Le sequenze di caratteri sono null-terminated. 
+
+Per i campi interi è possibile anteporre unsigned per indicare tipi senza segno. 
+
+ 
+
+char 
+
+ASCII character 
+
+1 byte 
+
+byte* 
+
+signed integer 
+
+1 byte 
+
+short 
+
+signed integer 
+
+2 byte 
+
+long 
+
+signed integer 
+
+4 byte 
+
+float 
+
+floating point 
+
+4 byte 
+
+double 
+
+floating point 
+
+8 byte 
+
+char(N) 
+
+string 
+
+N byte 
+
+
+
+ 
+
+*Come noto, “byte” non esiste tra i tipi built-in di C++. Qui viene utilizzato per distinguere 
+chiaramente i campi a 8 bit che contengono valori numerici (byte) da quelli che vanno 
+interpretati come caratteri (char). 
+
+4.1 pacchetto VOID (esempio) 
+
+Il pacchetto “VOID” non contiene informazioni. La dimensione complessiva del pacchetto è 
+pertanto fissa ad 11 byte (solo header). 
+
+ 
+
+0Bh 
+
+V 
+
+O 
+
+I 
+
+D 
+
+\0 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+header del pacchetto VOID 
+
+ 
+
+Il pacchetto VOID non ha una frequenza di invio predefinita. Può essere impiegato a fini di 
+debug (alla stregua di un comando di ping) per verificare la ricezione di pacchetti senza 
+interferire con il funzionamento ordinario della rete. 
+
+4.2 pacchetti INFO_NET ed INFO_NET2 
+
+Questi pacchetti contengono i dati di servizio, solitamente detenuti dal computer AVM di bordo. 
+Sono inclusi linea e fermata correnti secondo la codifica aziendale, codice del veicolo, stato 
+del servizio esercito, ecc. 
+
+In condizioni normali, un solo dispositivo alla volta ha l’autorità di trasmettere questa tipologia 
+di dati. 
+
+
+ 
+
+4Dh 
+
+I 
+
+N 
+
+F 
+
+O 
+
+_ 
+
+N 
+
+E 
+
+T 
+
+\0 
+
+ 
+
+ 
+
+
+
+header del pacchetto INFO_NET 
+
+ 
+
+65h 
+
+I 
+
+N 
+
+F 
+
+O 
+
+_ 
+
+N 
+
+E 
+
+T 
+
+2 
+
+\0 
+
+ 
+
+
+
+header del pacchetto INFO_NET2 
+
+ 
+
+I pacchetti di questo tipo presentano informazioni che richiedono un aggiornamento costante. 
+La frequenza di invio raccomandata è pertanto di 1Hz. Le due tipologie di pacchetti 
+condividono buona parte delle informazioni. Le differenze principali sono riassunte nel 
+paragrafo 4.2.3. 
+
+4.2.1 Preambolo 
+
+I pacchetti si compongono di un preambolo di 6 byte a contenuto fisso, contiguo alla parte dati 
+vera e propria. Tale preambolo è mantenuto per retrocompatibilità ed andrebbe pertanto 
+ignorato nelle nuove applicazioni. Nel seguito si riporta comunque la descrizione dei campi 
+che lo compongono: 
+
+ 
+
+Campo 
+
+Tipo 
+
+Offset 
+
+Descrizione 
+
+Valore 
+
+Org 
+
+char 
+
+11 
+
+Nodo origine (su bus seriale) 
+
+01h 
+
+Dst 
+
+char 
+
+12 
+
+Nodo destinazione (su bus seriale) 
+
+FFh 
+
+Len 
+
+char 
+
+13 
+
+Dimensione pacchetto (incluso preambolo, 
+escluso header) 
+
+XXh 
+
+Id_Msg 
+
+unsigned short 
+
+14 
+
+Id numerico del tipo pacchetto 
+
+80h 
+
+Ver 
+
+char 
+
+16 
+
+Versione del pacchetto 
+
+1 
+
+
+
+preambolo comune ai pacchetti INFO_NET ed INFO_NET2 
+
+4.2.2 Struttura dati INFO_NET 
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+Datetime 
+
+unsigned long 
+
+32 
+
+17 
+
+Data/ora dal 1/1/1970 
+
+Doors 
+
+byte 
+
+8 
+
+21 
+
+Stato porte 
+
+Fix 
+
+byte 
+
+8 
+
+22 
+
+Validità posizione GPS 
+
+Latitude 
+
+float 
+
+32 
+
+23 
+
+Latitudine 
+
+Longitude 
+
+float 
+
+32 
+
+27 
+
+Longitudine 
+
+Speed 
+
+unsigned byte 
+
+8 
+
+31 
+
+Velocità in Km/h (255=dato non valido) 
+
+Loc 
+
+byte 
+
+8 
+
+32 
+
+Stato localizzazione 
+
+Line 
+
+char(5) 
+
+- 
+
+33 
+
+Codice linea (max 4 caratteri + null) 
+
+Shift 
+
+char(4) 
+
+- 
+
+38 
+
+Turno veicolare (max 3+null) 
+
+Dest 
+
+char(9) 
+
+- 
+
+42 
+
+Codice fermata capolinea (max 8+null) 
+
+Current 
+
+char(9) 
+
+- 
+
+51 
+
+Codice fermata corrente (max 8+null) 
+
+
+
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+Next 
+
+char(9) 
+
+- 
+
+60 
+
+Codice prossima fermata (max 8+null) 
+
+Area 
+
+byte 
+
+8 
+
+69 
+
+Stato area di fermata 
+
+Vehicle 
+
+unsigned short 
+
+16 
+
+70 
+
+ID veicolo 
+
+Direction 
+
+char 
+
+8 
+
+72 
+
+‘A’ / ‘R’ / ‘?’ 
+
+Driver 
+
+unsigned long 
+
+32 
+
+73 
+
+Identificativo autista 
+
+ 
+
+ 
+
+ 
+
+77 
+
+ 
+
+
+
+struttura dati del pacchetto INFO_NET 
+
+4.2.3 Struttura dati INFO_NET2 
+
+Le differenze principali del pacchetto INFO_NET2 rispetto al precedente sono: 
+
+- Il campo Line (codice linea) prevede 6 caratteri utili anziché 4; 
+- Il campo Shift (turno) prevede 6 caratteri utili anziché 3; 
+- Aggiunta di ulteriori campi quali Company (codice vettore), AVM (sistema di 
+localizzazione), Status e Timing (funzioni avanzate di infoutenza) e Trip (codice corsa, 
+previsto dalla versione 4.02 di questo documento) 
+
+
+ 
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+Datetime 
+
+unsigned long 
+
+32 
+
+17 
+
+Data/ora dal 1/1/1970 
+
+Doors 
+
+byte 
+
+8 
+
+21 
+
+Stato porte 
+
+Fix 
+
+byte 
+
+8 
+
+22 
+
+Validità posizione GPS 
+
+Latitude 
+
+float 
+
+32 
+
+23 
+
+Latitudine 
+
+Longitude 
+
+float 
+
+32 
+
+27 
+
+Longitudine 
+
+Speed 
+
+unsigned byte 
+
+8 
+
+31 
+
+Velocità in Km/h (255=dato non valido) 
+
+Loc 
+
+byte 
+
+8 
+
+32 
+
+Stato localizzazione 
+
+Line 
+
+char(7) 
+
+- 
+
+33 
+
+Codice linea (max 6 caratteri + null) 
+
+Shift 
+
+char(7) 
+
+- 
+
+40 
+
+Turno veicolare (max 6 caratteri + null) 
+
+Dest 
+
+char(9) 
+
+- 
+
+47 
+
+Codice fermata capolinea (max 8 + null) 
+
+Current 
+
+char(9) 
+
+- 
+
+56 
+
+Codice fermata corrente (max 8 + null) 
+
+Next 
+
+char(9) 
+
+- 
+
+65 
+
+Codice prossima fermata (max 8 + null) 
+
+Area 
+
+byte 
+
+8 
+
+74 
+
+Stato area di fermata 
+
+Vehicle 
+
+unsigned short 
+
+16 
+
+75 
+
+ID veicolo 
+
+Direction 
+
+char 
+
+8 
+
+77 
+
+‘A’ / ‘R’ / ‘?’ 
+
+Driver 
+
+unsigned long 
+
+32 
+
+78 
+
+Identificativo autista 
+
+Company 
+
+char(4) 
+
+- 
+
+82 
+
+Codice vettore (max 3 caratteri + null) 
+
+AVM 
+
+char(3) 
+
+- 
+
+86 
+
+Codice AVM (max 2 caratteri + null) 
+
+Status 
+
+byte 
+
+8 
+
+89 
+
+Stato di esercizio del veicolo 
+
+Timing 
+
+short 
+
+16 
+
+90 
+
+Tempo alla partenza / anticipo / ritardo 
+
+Trip 
+
+Char(9) 
+
+- 
+
+92 
+
+Codice corsa/percorso (max 8 caratteri + null) 
+
+ 
+
+ 
+
+ 
+
+101 
+
+ 
+
+
+
+struttura dati del pacchetto INFO_NET2 
+
+
+4.2.4 ORG/DST 
+
+Questi campi permettono di specificare un codice che identifichi a livello applicativo i nodi di 
+origine e destinazione del pacchetto (in particolare su linee seriali o canali alternativi). 
+
+Per questa tipologia di pacchetto i valori sono predefiniti ed hanno il seguente significato: 
+
+ 
+
+Valore 
+
+Nodo 
+
+01h 
+
+Sistema AVM 
+
+FFh 
+
+Broadcast 
+
+
+
+Significato dei valori predefiniti per i campi ORG/DST 
+
+4.2.5 LEN 
+
+Indicano la dimensione che il pacchetto avrebbe se trasmesso senza l’header di 11 byte 
+(modalità impiegata su linea seriale). Assume pertanto i seguenti valori: 
+
+ 
+
+Valore 
+
+Pacchetto 
+
+66 (42h) 
+
+INFO_NET 
+
+90 (5Ah) 
+
+INFO_NET2 
+
+
+
+Valori del campo LEN 
+
+4.2.6 ID_MSG/VER 
+
+Identificano in modo univoco la tipologia di pacchetto (non dissimile dal campo TYPE 
+dell’header). Ai fini di questo documento, i campi sono dunque ridondanti ed hanno valore 
+predefinito. 
+
+4.2.7 DATETIME 
+
+Data ed ora espresse in secondi dal 1° gennaio 1970 e corrette secondo fuso orario ed ora 
+legale locali. Si presume che l’orologio di bordo sia mantenuto sincronizzato con il segnale 
+GPS.2 
+
+2 Nota: l’ora trasmessa in questo pacchetto è da intendersi a puro scopo di riferimento in mancanza di 
+altre sorgenti autoritative. Ove disponibile, il servizio NTP/SNTP è da intendersi come unica ora 
+“ufficiale” della rete di bordo, comune a tutti gli apparati e propagata da un server centrale di terra. Per 
+maggiori indicazioni a riguardo si può fare riferimento al capitolo Errore. L'origine riferimento non è 
+stata trovata.. 
+
+4.2.8 DOORS 
+
+Segnala lo stato delle porte del mezzo. Combinato con l’informazione AREA (cfr. par. 4.2.18) 
+indica se il mezzo stia effettuando o meno una fermata. 
+
+ 
+
+
+Valore 
+
+Significato 
+
+-1 (default) 
+
+informazione non disponibile / porte guaste 
+
+0 
+
+porte chiuse 
+
+>0 
+
+porte aperte 
+
+ 
+
+ 
+
+
+
+Valori del campo DOOR 
+
+ 
+
+Nota (proposta): lo stato porte può essere impiegato come maschera di bit per indicare 
+l’effettivo stato di ogni singola porta del mezzo. 
+
+4.2.9 FIX 
+
+Validità della localizzazione GPS (valido/non valido). 
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+dato di localizzazione non valido 
+
+1 
+
+dato valido 
+
+
+
+Valori del campo FIX 
+
+4.2.10 LATITUDE/LONGITUDE 
+
+Coordinate di posizione espresse in gradi decimali Nord/Est secondo il sistema WGS84. Tali 
+dati sono significativi solo per FIX=1 (paragrafo 4.2.9) 
+
+4.2.11 SPEED 
+
+Velocità istantanea rilevata dal GPS (o calcolata dall’AVM/AVL) espressa in Km/h. Il Campo 
+può variare tra 0 e 255, tuttavia i valori superiori a 250 sono riservati per segnalare anomalie 
+o malfunzionamenti. 
+
+Una velocità pari a 255 indica “dato non disponibile”. 
+
+ 
+
+Valore 
+
+Significato 
+
+0-250 
+
+Velocità corrente 
+
+251-254 
+
+Riservato 
+
+255 
+
+Dato non disponibile (default) 
+
+
+
+Valori del campo FIX 
+
+4.2.12 LOC 
+
+Indica lo stato di localizzazione elaborato dal sistema AVM di bordo, ed un suo eventuale 
+funzionamento degradato. 
+
+ 
+
+
+Valore 
+
+Significato 
+
+1 
+
+Localizzazione su Servizio: l’AVM dispone di tutte le informazioni per la 
+caratterizzazione della linea. 
+
+2 
+
+Localizzazione su Grafo: l’AVM è localizzato sulla rete ma non sul servizio. 
+Non è possibile fornire l’indicazione di prossima fermata. 
+
+3 
+
+Localizzazione su territorio: si dispongono delle sole informazioni di 
+posizione geografica. 
+
+4 
+
+Perso: non si hanno informazioni sulla posizione del mezzo. 
+
+
+
+
+Valori del campo LOC 
+
+4.2.13 LINE 
+
+Codice aziendale della linea attualmente esercita. Il codice è una stringa alfanumerica con una 
+lunghezza massima di 4 o 6 caratteri a seconda della versione (l’ultimo carattere è usato come 
+terminatore di stringa). 
+
+4.2.14 SHIFT 
+
+Il turno veicolare è una stringa alfanumerica che permette di risalire all’abbinamento tra mezzo 
+e servizio esercito. Tale dato può risultare particolarmente utile agli operatori ed ai sistemi di 
+monitoraggio dell’esercizio. 
+
+4.2.15 DEST 
+
+Indica il codice dell’ultima fermata del percorso attualmente servito dal mezzo (capolinea). 
+
+4.2.16 CURRENT 
+
+Indica la fermata attualmente servita dal mezzo. Questo campo assume significato solo 
+quando il veicolo si trova all’interno di un’area di fermata, e va pertanto impiegato 
+congiuntamente al campo AREA (par. 4.2.18). 
+
+Il valore di CURRENT non è definito al di fuori di un’area di fermata 
+
+4.2.17 NEXT 
+
+Indica la prossima fermata alla quale il veicolo si sta avvicinando. Nel momento in cui il mezzo 
+supera la fermata interessata, o esce dall’arco collegato alla stessa, il campo viene aggiornato 
+con il codice di quella successiva. 
+
+4.2.18 AREA 
+
+Questo campo permette di sapere se il veicolo si trova nell’intorno di una fermata servita (area 
+di fermata), e può assumere diversi valori in base alla posizione del mezzo nei confronti della 
+stessa. Salvo casi particolare, l’area si estende per 20-25 metri prima e dopo la palina di 
+fermata. 
+
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+Non in area di fermata. (In questa condizione il campo CURRENT non è 
+valorizzato – cfr. par. 4.2.15) 
+
+1 
+
+In area di fermata (ingresso): il mezzo è entrato nell’area di fermata e si trova 
+a monte della stessa. 
+
+2 
+
+In area di fermata (uscita): il mezzo ha effettuato la fermata ed è in uscita 
+dall’area. 
+
+3 
+
+Fermata in corso: il mezzo ha le portiere aperte e sta correttamente 
+effettuando una fermata in area. In tale situazione viene valorizzato anche il 
+campo DOORS (par. 4.2.4) 
+
+4 
+
+In area di fermata (generico): il mezzo si trova all’interno dell’area di fermata 
+con le porte chiuse. 
+
+-1 
+
+Informazione non disponibile (default) 
+
+
+
+Valori del campo AREA 
+
+4.2.18bis Nota sull’interpretazione dell’area di fermata 
+
+Con “Area di fermata” si identifica un intorno significativo entro il quale il mezzo può effettuare 
+operazioni di salita/discesa dei passeggeri in sicurezza. Il veicolo può partire, fermarsi, aprire 
+e chiudere più volte le porte all’interno di una stessa area di fermata. 
+
+L’area si estende tipicamente per 20-25 metri (o comunque almeno una “lunghezza”) prima e 
+dopo la palina di fermata, ma in generale è configurabile è può differenziarsi in base al contesto 
+(urbano/extraurbano) pur mantenendo la sua significatività. 
+
+Il concetto di ingresso/uscita è più labile e solitamente è legato alle caratteristiche geometriche 
+della strada. In generale, un veicolo si intende “in ingresso” nel momento in cui inizia una 
+manovra di avvicinamento alla banchina (accosto o anche solo rallentamento significativo); nel 
+caso di terminal o stazioni, l’area di ingresso può coincidere con l’intero terminal. 
+
+Dal punto vi sita informativo, il concetto di ingresso ed uscita dall’area di fermata si esprime 
+con la valorizzazione e l’aggiornamento dei campi CURRENT, NEXT e DOORS; in particolare: 
+
+- il campo CURRENT viene valorizzato all’ingresso in area di fermata, e rimane tale 
+fintanto che il mezzo vi si trova all’interno (AREA=1/2/3), anche se la fermata non viene 
+effettuata; 
+- quando il mezzo entra nell’area di fermata indicata dal campo NEXT, lo stesso valore 
+viene assunto dal campo CURRENT; 
+- il campo NEXT viene generalmente aggiornato alla fermata successiva nel momento 
+in cui il mezzo supera la fermata o, più in generale, quando il veicolo abbandona l’arco 
+o l’area abbinati alla fermata stessa; 
+- il campo AREA ha valore 3 quando il mezzo è in fermata ed ha le porte aperte 
+(DOORS=1). 
+
+
+Il campo AREA assume valore 4 quando non è possibile definire se il mezzo si trovi prima o 
+dopo un’eventuale palina, o più in generale quando l’AVM non supporti altri valori (tipicamente 
+in ambito extraurbano). 
+
+Un eventuale sistema di infomobilità dovrà pertanto verificare lo stato del campo AREA per 
+decidere l’istante in cui effettuare gli annunci di fermata corrente e successiva. Il seguente 
+schema riassume quanto sopra riportato: 
+
+ 
+
+
+ 
+
+Area_fermata_data
+1101Area di fermata1102DOORS=0CURRENT=’’
+NEXT=’1102’
+AREA=0DOORS00001113221AREAfermata non effettuatafermata effettuataCURRENT1100‘1100’
+‘1100’
+‘1101’
+‘1101’
+‘1102’
+‘1102’
+DOORS=1CURRENT=’1100’
+NEXT=’1101’
+AREA=3DOORS=0CURRENT=’1100’
+NEXT=’1101’
+AREA=0 
+
+
+ATTENZIONE: è possibile che non tutti i sistemi AVM supportino tutti i valori previsti per l’area di fermata, o 
+ne diano un’interpretazione “elastica”. A titolo di esempio, il sistema AVM urbano di GTT valorizza il campo 
+“CURRENT” solo in caso di fermata in corso (porte aperte). 
+
+Più in generale, è bene che a livello applicativo l’area di fermata venga considerata come informazione di 
+ausilio, e non come fonte primaria. 
+
+4.2.19 VEHICLE 
+
+L’ID veicolo è un numero che in generale coincide con la matricola aziendale del veicolo. La 
+matricola è posta sempre ben in vista sia all’interno che all’esterno del mezzo, ed oltre ad 
+essere un dato essenziale per alcuni sistemi di bordo quali bigliettazione e videosorveglianza, 
+può risultare utile all’utenza a fini informativi o di comunicazione con l’azienda. 
+
+4.2.20 DIRECTION 
+
+Codice aziendale dell’attuale fermata di destinazione. Permette di identificare la direzione ed 
+il capolinea correnti. Può essere usato per caratterizzare percorsi speciali o corse limitate. 
+
+4.2.21 DRIVER 
+
+Codice numerico identificativo dell’autista. L’inserimento del codice da parte del personale 
+addetto può essere opzionale e volontario. In tal caso questo campo assume valore nullo o 
+predeterminato. 
+
+
+4.2.22 COMPANY 
+
+Codice dell’azienda a cui appartiene il veicolo. La codifica coincide con quella definita per il 
+Card Data Model del progetto BIP3 ed è mantenuta e aggiornata dal Centro Servizi Regionale 
+della Regione Piemonte al quale si consiglia di fare riferimento per gli ultimi aggiornamenti. In 
+appendice sono riportati i valori definiti alla data di rilascio del documento. 
+
+3 5T srl – “Requisiti tecnici delle smartcard – CARD DATA MODEL” - Ver.2.4 - luglio 2011 
+
+4 “ELSAG” nelle versioni precedenti. La correzione è dovuta ad un cambio di brand del produttore. 
+
+4.2.23 AVM 
+
+Questo codice fornisce un’indicazione sulla tipologia di AVM (o altra periferica) installato a 
+bordo del mezzo e sorgente dei dati di esercizio. Al momento sono identificati due sistemi: 
+
+ 
+
+Valore 
+
+AVM 
+
+01 
+
+OPAVM (GTT/Leonardo4/Mizar) 
+
+02 
+
+AESYS (ExtraTo) 
+
+03 
+
+Divitech 
+
+04 
+
+OPAVM (Leonardo) 
+
+05 
+
+AEP 
+
+06 
+
+TEQ 
+
+99 
+
+Altro / non significativo 
+
+
+
+Valori del campo AVM 
+
+4.2.24 STATUS (opzionale) 
+
+Questo campo indica l’attuale stato di esercizio del veicolo (in linea, capolinea, ingresso in 
+servizio ecc.) Tale informazioni può risultare utile in vari ambiti, quali infoutenza (in modo da 
+poter differenziare le informazioni in base all’effettivo esercizio del mezzo), consuntivazione e 
+bigliettazione. Gli stati identificati sono i seguenti: 
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+Veicolo in servizio (default) 
+
+1 
+
+Capolinea: il mezzo è fermo presso un capolinea o stazione, in attesa di 
+rientrare in servizio. 
+
+2 
+
+Entrata in servizio: il veicolo è in movimento ma non sta ancora effettuando 
+servizio 
+
+3 
+
+Uscita dal servizio: il veicolo è in movimento ma ha terminato il proprio 
+servizio (veicolo rientrante in deposito) 
+
+4 
+
+Manutenzione/Deposito/Altro 
+
+8 
+
+Spegnimento: il veicolo è spento (contatto chiave off); l’AVM è in fase di 
+spegnimento temporizzato. 
+
+-1 
+
+Sconosciuto 
+
+
+
+Valori del campo STATUS. Si noti che non è detto che tutti i valori siano supportati da tutti gli AVM 
+
+
+4.2.25 TIMING (opzionale) 
+
+Nel caso in cui l’AVM lo supporti, questo campo permette di conoscere il tempo in secondi di 
+anticipo/ritardo del veicolo rispetto al suo piano di viaggio programmato o alla sua frequenza 
+di passaggio, piuttosto che il tempo di arrivo alla prossima fermata. 
+
+Lo stesso campo contiene i secondi mancanti alla ripartenza del veicolo da un capolinea. Il 
+campo può assumere valori positivi o negativi, e va usato ed interpretato in congiunzione con 
+il valore del campo STATUS (4.2.24). 
+
+Questo campo è opzionale ed è aperto ad ulteriori evoluzioni nel futuro. 
+
+4.2.26 TRIP 
+
+Identifica il codice della corsa o del percorso attualmente eserciti dal mezzo. Il codice è univoco 
+all’interno di una stessa linea e permette di identificare una sequenza di fermate (ad esempio 
+all’interno di linee multipercorso) e/o, in base all’accezione specifica dell’AVM, una precisa 
+sequenza di passaggi e di orari di passaggio. 
+
+4.3 pacchetti INFO_BIP ed INFO_BIP2 
+
+Tale pacchetto viene generato dall’applicazione di monetica di bordo con frequenza indicativa 
+di una volta ogni 4 secondi5. Contiene i dati e lo stato del sistema di bigliettazione (nel caso 
+specifico il sistema BIP). 
+
+5 Nel caso in cui l’applicazione supporti anche il pacchetto INFO_BIP2, è possibile che questo venga 
+inviato il alternanza con INFO_BIP. Di fatto, la frequenza di invio di ciascun tipo di pacchetti risulta così 
+dimezzata ad una volta ogni 8 secondi. 
+
+ 
+
+49h 
+
+I 
+
+N 
+
+F 
+
+O 
+
+_ 
+
+B 
+
+I 
+
+P 
+
+\0 
+
+ 
+
+ 
+
+
+
+header del pacchetto INFO_BIP 
+
+ 
+
+A7h 
+
+I 
+
+N 
+
+F 
+
+O 
+
+_ 
+
+B 
+
+I 
+
+P 
+
+2 
+
+\0 
+
+ 
+
+
+
+header del pacchetto INFO_BIP2 
+
+4.3.1 Preambolo 
+
+Il preambolo si compone di 6 byte ed è lo stesso già descritto nel paragrafo 4.2.1. Come 
+anticipato, i dati del preambolo possono essere in generale ignorati in quanto mantenuti per 
+retrocompatibilità. 
+
+4.3.2 Struttura dati INFO_BIP / INFO_BIP2 
+
+I due pacchetti INFO_BIP ed INFO_BIP2 risultano esattamente uguali per i primi 73 byte. In 
+altre parole, INFO_BIP2 è un’estensione di INFO_BIP (contrariamente a quanto illustrato nel 
+
+
+paragrafo 4.2 per i pacchetti INFO_NET, che al loro interno differivano anche per la lunghezza 
+di alcuni campi comuni) 
+
+ 
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+Datetime 
+
+unsigned long 
+
+32 
+
+17 
+
+Data/ora dal 1/1/1970 (vedere par. 4.3.3) 
+
+ApplMode 
+
+unsigned byte 
+
+8 
+
+21 
+
+Stato applicativo 
+
+ApplStatus 
+
+unsigned byte 
+
+8 
+
+22 
+
+Stato diagnostico / codice errore 
+
+ServiceStatus 
+
+unsigned byte 
+
+8 
+
+23 
+
+Stato servizio 
+
+CnvTotal 
+
+unsigned byte 
+
+8 
+
+24 
+
+Numero totale di validatori a bordo 
+
+CnvServiceCount 
+
+unsigned byte 
+
+8 
+
+25 
+
+Numero validatori in servizio e pronti 
+
+CnvStatus 
+
+unsigned short 
+
+16 
+
+26 
+
+Validatori funzionanti (bitmask) 
+
+LocalityType 
+
+unsigned byte 
+
+8 
+
+28 
+
+Riservato per espansioni future (default=0) 
+
+LocalityValue 
+
+unsigned short 
+
+16 
+
+29 
+
+Località tariffaria (nullo se ServiceStatus=0) 
+
+MessageMode 
+
+unsigned byte 
+
+8 
+
+31 
+
+Modo di utilizzo del campo MessageText 
+
+MessageText 
+
+char(32) 
+
+- 
+
+32 
+
+Messaggio di testo libero (max 31+null) 
+
+Fix 
+
+char 
+
+8 
+
+64 
+
+Validità posizione GPS rilevata dal BIP 
+
+Latitude 
+
+float 
+
+32 
+
+65 
+
+Latitudine 
+
+Longitude 
+
+float 
+
+32 
+
+69 
+
+Longitudine 
+
+ 
+
+ 
+
+ 
+
+73 
+
+ 
+
+
+
+struttura dati del pacchetto INFO_BIP (e dei primi 73 byte del pacchetto INFO_BIP2) 
+
+ 
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+GpsSignalLevel 
+
+unsigned byte 
+
+8 
+
+73 
+
+Livello del segnale GPS (0÷10) 
+
+GprsSignalLevel 
+
+unsigned byte 
+
+8 
+
+74 
+
+Livello del segnale GPRS (0÷10) 
+
+WiFiSignalLevel 
+
+unsigned byte 
+
+8 
+
+75 
+
+Livello del segnale Wireless Lan (0÷10) 
+
+IPLinkStatus 
+
+unsigned byte 
+
+8 
+
+76 
+
+Stato link IP corrente 
+
+LocalityCodeBip 
+
+unsigned int 
+
+32 
+
+77 
+
+Codice BIP della località (derivato 
+ISTAT), range 0..0xFFFFFF e cioe’ 24 
+bit, il valore 0 significa linea non definita 
+
+LocalityDescriptionBip 
+
+char(41) 
+
+- 
+
+81 
+
+Nome località per esteso (max 40+null) 
+
+LineCodeBip 
+
+unsigned int 
+
+32 
+
+122 
+
+Codice delle linea “BIP” (range 
+0..0xFFFFFF e cioe’ 24 bit, il valore 0 
+significa linea non definita) 
+
+LineDescriptionBip 
+
+char(41) 
+
+- 
+
+126 
+
+Descrizione della linea BIP esteso (max 
+40+null) 
+
+ 
+
+ 
+
+ 
+
+167 
+
+ 
+
+
+
+struttura dati del pacchetto INFO_BIP2 dal 74° byte in avanti 
+
+4.3.3 DATETIME 
+
+Il campo contiene l’ora di riferimento attuale del sistema di bigliettazione: ovvero la stessa ora 
+visualizzata sui validatori (pertanto già corretta con fuso orario locale ed eventuale ora legale). 
+Tale riferimento, in casi particolari o anomali, potrebbe non coincidere con quella dell’AVM, ed 
+
+
+in generale non è detto che coincida con l’ora interna al validatore, impiegata per la convalida 
+dei titoli di viaggio (che è invece un riferimento assoluto non influenzato dall’ora legale). 
+
+4.3.4 APPLMODE 
+
+Il campo può assumere valori diversi in base allo stato attuale del sistema di bigliettazione. I 
+valori attualmente previsti sono i seguenti: 
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+Applicazione in avvio 
+
+1 
+
+Interrogazione preliminare validatori 
+
+2 
+
+Aggiornamento software validatori 
+
+3 
+
+Invio file parametri validatori 
+
+4 
+
+Scarico dati di attività validatori 
+
+5 
+
+Servizio operativo 
+
+6 
+
+Fase di “rientro in deposito” 
+
+7 
+
+Scambio dati con la parte di terra (deposito) 
+
+8 
+
+Inizio fase spegnimento 
+
+9 
+
+Applicazione terminata 
+
+
+
+Valori del campo APPLMODE 
+
+4.3.5 APPLSTATUS 
+
+Lo stato diagnostico vale 0 se l’applicazione di bigliettazione non ha problemi; in caso contrario 
+riporta il codice dell’errore: 
+
+ 
+
+Codice errore 
+
+significato 
+
+0 
+
+Nessun errore 
+
+1 
+
+Guasto generico 
+
+2 
+
+BIP in attesa del primo contatto con il Centro. 
+L’Apparato BIP ha ricevuto l’ID veicolo (numero sociale) dall’AVM, ma il 
+primo contatto con il Centro BIP non è mai avvenuto. 
+
+3 
+
+BIP in attesa di prima targatura. 
+L’Apparato BIP non ha mai ricevuto l’ID veicolo (numero sociale) dall’AVM 
+per cui non è in grado di contattare il centro BIP per richiedere lo scarico 
+della configurazione. 
+
+
+
+Valori del campo APPLSTATUS 
+
+4.3.6 SERVICESTATUS 
+
+Indica lo stato di servizio dell’applicazione di bigliettazione. Può assumere i seguenti valori: 
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+Fuori Servizio: l’applicazione è in fase di scarico dati o di configurazione ed i 
+validatori sono nello stato di “fuori servizio” 
+
+1 
+
+Servizio degradato. 
+
+
+
+
+Valore 
+
+Significato 
+
+2 
+
+Servizio nominale: rappresenta lo stato di funzionamento normale durante il servizio 
+
+3 
+
+Blocco convalide: indica che l’autista ha comandato un blocco delle convalide. 
+
+
+
+Valori del campo SERVICESTATUS 
+
+4.3.7 CNVSTATUS 
+
+Maschera di bit che indica se un validatore è presente/funzionante. Il bit meno significativo 
+indica il validatore più vicino alla cabina di guida principale (nel caso di veicoli a doppia cabina). 
+Un bit a zero significa che il corrispondente validatore è assente o guasto. 
+
+4.3.8 LOCALITYVALUE 
+
+ID numerico della località tariffaria in atto. Se ServiceStatus vale 0, allora questo campo è 
+nullo. 
+
+4.3.9 MESSAGEMODE 
+
+Indica il modo di utilizzo del campo MessageText. Se vale 0, allora il campo seguente non 
+deve essere considerato è l’AVM deve mantenere il vecchio messaggio. Se vale 1, allora 
+l’AVM deve rimpiazzare il vecchio messaggio con il testo che segue. 
+
+4.3.10 MESSAGETEXT 
+
+Messaggio di testo libero. Deve essere considerato solo se MessageMode vale 1. 
+
+4.3.11 LATITUDE/LONGITUDE/FIX 
+
+Dati di localizzazione del GPS interno al sistema BIP. 
+
+4.3.12 GPS/GPRS/WIFI SIGNAL LEVEL 
+
+Informazioni sul livello di segnale rilevato dal sistema BIP. Per ciascun campo i valori possono 
+andare da 0 a 10. 
+
+4.3.13 IPLINKSTATUS 
+
+Indica lo stato della connessione dati IP ed il canale attualmente utilizzato; i valori accettati 
+sono i seguenti: 
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+None: connessione dati terra-bordo non attiva. 
+
+1 
+
+WiFi: connessione dati attiva su rete wifi (di deposito). 
+
+2 
+
+GPRS: connessione dati attiva su canale GPRS a bassa velocità 
+
+
+
+
+Valore 
+
+Significato 
+
+3 
+
+UMTS: connessione dati attiva su canale 3G o superiore. 
+
+
+
+Valori del campo IPLINKSTATUS 
+
+4.3.14 LOCALITYCODEBIP 
+
+Il codice della località è un intero a 24 bit (codificato su 32 bit) ed è derivato dalla codifica 
+ISTAT. Può assumere tutti i valori da 0 a 16777215 (FFFFFFh). 
+
+Il valore 0 indica località non definita. 
+
+4.3.15 LOCALITYDESCRIPTIONBIP 
+
+Nome esteso della località BIP alla quale si riferisce il LOCALITY CODE descritto al paragrafo 
+precedente. 
+
+4.3.16 LINECODEBIP 
+
+Come per il codice della località, il codice della linea è un intero a 24 bit codificato su 32 che 
+può assumere tutti i valori da 0 a 16777215 (FFFFFFh). Il valore 0 indica che la linea non è 
+definita. 
+
+4.3.17 LINEDESCRIPTIONBIP 
+
+Nome esteso della linea alla quale si riferisce il LINE CODE descritto al paragrafo precedente. 
+
+4.4 pacchetto CMD_BIP 
+
+Tale pacchetto viene generato dall’AVM (o da altro dispositivo in rete) per inviare comandi 
+all’applicazione di monetica. Il pacchetto non ha una frequenza fissa di invio, ma viene 
+generato solo ad evento. 
+
+ 
+
+14h 
+
+C 
+
+M 
+
+D 
+
+_ 
+
+B 
+
+I 
+
+P 
+
+\0 
+
+ 
+
+ 
+
+ 
+
+
+
+header del pacchetto CMD_BIP 
+
+4.4.1 Preambolo 
+
+Il preambolo si compone di 6 byte ed è lo stesso già descritto nel paragrafo 4.2.1. In generale 
+i dati del preambolo possono essere ignorati in quanto esso viene mantenuto per 
+retrocompatibilità. 
+
+
+4.4.2 Struttura dati CMD_BIP 
+
+ 
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+CommandType 
+
+unsigned byte 
+
+8 
+
+17 
+
+Tipo di comando (default = 0) 
+
+CommandValue 
+
+unsigned short 
+
+16 
+
+18 
+
+ID del comando (vedere paragrafo 
+
+ 
+
+ 
+
+ 
+
+20 
+
+ 
+
+
+
+struttura dati del pacchetto CMD_BIP 
+
+4.4.3 COMMANDTYPE e COMMANDVALUE 
+
+Tali campi vengono usati congiuntamente e servono per inviare comandi dall’interfaccia autista 
+(o da altri apparati) al sistema di bigliettazione: 
+
+ 
+
+COMMANDTYPE 
+
+COMMANDVALUE 
+
+significato 
+
+1 
+
+1 
+
+Abilita blocco convalide 
+
+1 
+
+0 
+
+Disabilita blocco convalide 
+
+
+
+Valori dei campi COMMANDTYPE e COMMANDVALUE (in evoluzione). 
+
+4.5 pacchetto INFO_PAX 
+
+Questo pacchetto dati è stato progettato e sviluppato dal GTT e viene incorporato per la prima 
+volta a partire dalla versione 4.500 di questo documento. Il pacchetto contiene le informazioni 
+relative al conteggio dei passeggeri a bordo mezzo ed al tipo di sistema di rilevamento 
+impiegato. 
+
+In caso di presenza – a bordo – di più dispositivi di conteggio, i pacchetti possono essere 
+trasmessi da ciascuno di essi, in quanto tra le informazioni veicolate figurano tipologia ed 
+identificativo del mittente. E` altresì possibile la presenza di più sensori dialoganti con un’unica 
+unità di acquisizione ed elaborazione (MASTER): in tal caso potrà essere quest’ultima a 
+trasmettere un unico pacchetto. 
+
+ 
+
+4Eh 
+
+I 
+
+N 
+
+F 
+
+O 
+
+_ 
+
+P 
+
+A 
+
+X 
+
+\0 
+
+ 
+
+ 
+
+
+
+header del pacchetto INFO_PAX 
+
+ 
+
+La frequenza di invio non è fissata ma dipende dalle caratteristiche del contapasseggeri. In 
+generale, il pacchetto viene inviato almeno in corrispondenza dell’evento di chiusura porte, ma 
+può anche essere trasmesso ad alta frequenza a porte aperte (conteggio in tempo reale) e/o 
+periodicamente a porte chiuse. 
+
+4.5.1 Preambolo 
+
+Il preambolo di 6 byte è costruito secondo le regole descritte nel paragrafo 4.2.1 e viene 
+mantenuto per retrocompatibilità. 
+
+
+4.5.2 Struttura dati 
+
+Campo 
+
+Tipo 
+
+bit 
+
+Offset 
+
+Descrizione 
+
+TimeStamp 
+
+unsigned long 
+
+32 
+
+17 
+
+Data/ora a partire dal 1/1/1970 (rif. par. 4.3.3) 
+
+DoorStatus 
+
+byte 
+
+8 
+
+21 
+
+Stato porta su cui è installato il sensore 
+
+DoorID 
+
+byte 
+
+8 
+
+22 
+
+Identificativo della porta di riferimento 
+
+reserved 
+
+char(21) 
+
+- 
+
+23 
+
+ 
+
+Current 
+
+char(9) 
+
+- 
+
+54 
+
+Codice fermata di riferimento (max 8 + null) 
+
+Vehicle 
+
+unsigned short 
+
+16 
+
+63 
+
+ID veicolo 
+
+PaxIn 
+
+int 
+
+16 
+
+65 
+
+Numero di passeggeri entrati/usciti alla 
+fermata di riferimento 
+
+PaxOut 
+
+int 
+
+16 
+
+67 
+
+PaxOnBoard 
+
+int 
+
+16 
+
+69 
+
+Passeggeri a bordo 
+
+SensorType 
+
+byte 
+
+8 
+
+71 
+
+Tecnologia utilizzata per il conteggio 
+
+SensorID 
+
+byte 
+
+8 
+
+72 
+
+ID del sensore 
+
+Num 
+
+byte 
+
+8 
+
+73 
+
+Numero di sensori in servizio 
+
+Value 
+
+float 
+
+32 
+
+74 
+
+Parametro misurato dal sensore 
+
+AppStatus 
+
+unsigned byte 
+
+8 
+
+78 
+
+Stato diagnostico o codice errore 
+
+SensorStatus 
+
+char(2) 
+
+16 
+
+79 
+
+Bitmask sensori funzionanti 
+
+ 
+
+ 
+
+ 
+
+81 
+
+ 
+
+
+
+struttura dati del pacchetto INFO_PAX 
+
+4.5.3 TIMESTAMP 
+
+Il campo contiene l’ora di riferimento nota al sistema di conteggio passeggeri (che in generale 
+dovrebbe coincidere con quella di bordo) ed è utilizzabile a fini di log in fase di acquisizione 
+del dato. 
+
+Più in generale, va ricordato che l’ora di riferimento andrebbe acquisita impiegando le modalità 
+standard come indicato al paragrafo 5.1 
+
+4.5.4 DOORSTATUS 
+
+Indica lo stato della porta cui il sensore fa riferimento. L’informazione deve essere generata o 
+evinta direttamente dal sensore (a mezzo di cablaggio fisico o algoritmi di elaborazione 
+dell’immagine) e può pertanto non coincidere con quanto trasmesso in rete con i pacchetti 
+INFO_NET (par. 4.2.8) 
+
+ 
+
+Valore 
+
+Significato 
+
+-1 (default) 
+
+informazione non disponibile / porte guaste 
+
+0 
+
+porta chiusa 
+
+1 
+
+porta aperta 
+
+>1 
+
+numero di porte aperte (se trasmesso da unità MASTER) 
+
+
+
+Valori del campo DOOR 
+
+ 
+
+
+Nel caso in cui il sensore non disponga dell’informazione relativa allo stato porta, può acquisire 
+tale dato dalla rete tramite il pacchetto INFO_NET, ma in tal caso l’informazione non va ribadita 
+ed il valore del campo assume il valore di default -1. 
+
+Se l’informazione è prodotta da un dispositivo Master di aggregazione dei dati, il campo può 
+indicare il numero di porte aperte. 
+
+4.5.5 DOORID 
+
+E` l’identificativo della porta monitorata dal sensore: in generale la porta 0 dovrebbe essere 
+quella più vicina all’autista. Nel caso di sensori in grado di monitorare più porte aggregate, l’ID 
+sarà quello di una delle porte. 
+
+Nel caso di veicoli a doppia cabina, va chiaramente definito l’ordine in cui le porte vengono 
+numerate (eventualmente contrassegnandole fisicamente a bordo veicolo), partendo ad 
+esempio dalla cabina principale ed assegnando ID pari al lato destro e dispari al lato sinistro. 
+
+Nel caso in cui uno stesso sensore rilevi sia la porta destra che la sinistra, queste possono 
+avere lo stesso codice. 
+
+Tale campo assume valore -1 in caso di dati aggregati da unità master. 
+
+ 
+
+Valore 
+
+Significato 
+
+≥ 0 
+
+Identificativo della porta monitorata 
+
+-1 
+
+NA/Unità master 
+
+
+
+Valori del campo DOORID 
+
+4.5.6 CURRENT 
+
+Identificativo della fermata alla quale si riferisce il conteggio attuale. Questo campo coincide 
+con il valore CURRENT trasmesso all’interno del pacchetto INFO_NET (rif. par. 4.2.16) ma 
+rimane valorizzato tra una fermata e l’altra, aggiornandosi solo quando il sensore azzera i 
+contatori dei passeggeri saliti e discesi. 
+
+4.5.7 VEHICLE 
+
+Indica il codice aziendale del veicolo. Se a bordo è presente un AVM, questo campo deve 
+sempre coincidere con il campo VEHICLE del pacchetto INFO_NET (pag.19). 
+
+4.5.8 PAXIN/PAXOUT 
+
+Numero di passeggeri conteggiati dal sensore in salita/discesa. Il dato può essere 
+incrementato e trasmesso in tempo reale durante il conteggio a porte aperte (ad esempio con 
+frequenza di 1/s), oppure consuntivato dopo la chiusura delle stesse. 
+
+In generale, affinché il conteggio risulti coerente anche nel caso in cui le porte vengano aperte 
+e chiuse più volte in corrispondenza di una stessa fermata, questo dovrebbe azzerarsi solo al 
+variare del campo CURRENT del pacchetto INFO_NET (pag. 17). 
+
+Nel caso in cui il dato venga trasmesso da una unità Master, questo rappresenterà la somma 
+dei conteggi dei singoli sensori. 
+
+
+4.5.9 PAXONBOARD 
+
+Indica il numero di passeggeri a bordo mezzo, ricavato dal conteggio incrementale di 
+saliti/discesi o a mezzo di altri algoritmi di stima. 
+
+Il dato trasmesso dal singolo sensore può assumere valore negativo. In caso di unità master, 
+un numero negativo indica un errore di conteggio complessivo ed andrebbe pertanto limitato 
+a zero. 
+
+4.5.10 SENSORTYPE 
+
+Indica la tipologia di sensore che ha generato il conteggio. Al momento sono contemplate le 
+seguenti tipologie: 
+
+ 
+
+Valore 
+
+Significato 
+
+0 
+
+Master/NA 
+
+1 
+
+Telecamere 
+
+2 
+
+Sensori ad infrarosso 
+
+3 
+
+Sensori di peso 
+
+
+
+Valori del campo SENSORTYPE 
+
+4.5.11 SENSORID 
+
+Identificativo del sensore. Per quanto non vincolante, una indicazione può essere quella di 
+assegnare al sensore lo stesso ID della porta sulla quale è installato. 
+
+ 
+
+Valore 
+
+Significato 
+
+≥ 0 
+
+Identificativo del sensore 
+
+< 0 
+
+Unità master 
+
+
+
+Valori del campo SENSORID 
+
+ 
+
+La presenza di più unità master andrebbe evitata. Tuttavia nel caso si renda necessaria, è 
+possibile ipotizzare di assegnare a ciascuna di esse un identificativo negativo diverso. 
+
+4.5.12 NUM 
+
+Indica il numero di sensori attivi e funzionanti. Assume significato solo se trasmesso dall’unità 
+master. 
+
+ 
+
+Valore 
+
+Significato 
+
+≥ 0 
+
+Numero di sensori funzionanti 
+
+-1 
+
+Non disponibile / non valido 
+
+
+
+Valori del campo NUM 
+
+
+4.5.13 VALUE 
+
+Rappresenta il valore misurato dal sensore, nel caso in cui la tecnologia si basi sul rilevamento 
+di parametri fisici (ad esempio pressione) o parametri calcolati dal sensore stesso o dal master. 
+
+4.5.14 APPSTATUS 
+
+Lo stato diagnostico vale 0 se l’applicazione non ha problemi. In caso contrario riporta il codice 
+d’errore 
+
+ 
+
+Codice errore 
+
+Significato 
+
+0 
+
+Nessun errore 
+
+1 
+
+Guasto generico 
+
+2 
+
+Errore di connessione sensori/master 
+
+3 
+
+Errore valori ricevuti 
+
+4 
+
+Errore valori calcolati 
+
+5 
+
+Errore sincronizzazione centro 
+
+
+
+Valori del campo APPSTATUS 
+
+4.5.15 SENSORSTATUS 
+
+Maschera di bit che indica se un sensore è presente/funzionante. In generale, il bit meno 
+significativo indica il sensore con ID=0 e così via a crescere. Un bit a zero significa che il 
+corrispondente sensore è assente o guasto. 
+
+ 
+
+
+5 Servizi di bordo 
+
+Alla data di stesura di questo documento, sulla rete locale a bordo veicolo sono disponibili i 
+seguenti servizi: 
+
+- Time server (SNTP) 
+- Gateway (leggere le note nel paragrafo dedicato) 
+
+
+Si prevede che altri servizi saranno implementati in base ad esigenze future. Per quanto 
+possibile, servizi e funzionalità sono/saranno basati su implementazioni e protocolli standard. 
+
+5.1 Time server (raccomandato) 
+
+Il router veicolare di bordo (per i veicoli equipaggiati) espone le funzioni standard di time server 
+secondo il protocollo NTP/SNTP all’indirizzo 192.168.0.48 (si raccomanda di verificare 
+comunque l’indirizzo IP nella tabella in appendice). L’apparato in questione è un time server 
+autoritativo di strato 4 o superiore: il livello di precisione è pertanto da considerarsi adeguato 
+(e superiore) alle esigenze generiche della rete di bordo. 
+
+Lo schema di propagazione del segnale orario è riportato nel seguito. 
+
+ 
+
+ 
+
+Propagazione del segnale orario 
+
+5.2 Gateway/router 
+
+Il gateway di bordo svolge anche funzioni di routing e risponde all’indirizzo 192.168.0.48. In 
+condizioni di esercizio normale, tutte le porte di uscita e di entrata sono tuttavia bloccate per 
+motivi di sicurezza: eventuali esigenze di comunicazione terra-bordo e bordo-terra da parte 
+degli apparati sulla rete veicolare vanno concordate a priori e configurate esplicitamente per 
+essere incorporate e rilasciate in modo ufficiale. In appendice sono raccolte ed elencate le 
+configurazioni note, caricate sul gateway/router alla data di emissione del documento6. 
+
+6 Non tutte le regole di routing sono necessarie a tutte le aziende/veicoli. Pertanto è possibile che, in 
+base alle singole esigenze o versioni, solo alcune delle regole riportate siano attive. 
+
+ 
+
+ 
+
+
+Appendice: Piano di Indirizzamento 
+
+I parametri generici di configurazione della rete di bordo sono i seguenti: 
+
+ 
+
+subnet 
+
+192.168.0.0/24 
+
+mask 
+
+255.255.255.0 
+
+gateway (se presente)7 
+
+(192.168.0.254) 
+192.168.0.48 
+
+
+
+7 Pur essendo raccomandato, l’indirizzo .254 non risulta implementato sulla maggior parte dei veicoli. 
+
+ 
+
+Nel seguito è riportata l’ipotesi di piano di indirizzamento statico per le vetture GTT. Vengono 
+elencate sia le periferiche attualmente in uso (anche quelle limitate ad un numero esiguo di 
+veicoli) che quelle di prossima implementazione: si noti come la configurazione tenga conto 
+anche di funzionalità sovrapposte (e risulti pertanto ridondante). 
+
+In generale, la numerosità dei componenti è pensata per adattarsi al caso “peggiore” di vetture 
+tramviarie 34 metri bidirezionali (con doppia cabina). 
+
+ 
+
+Indirizzo 
+
+Dispositivo 
+
+Applicazione 
+
+Note 
+
+192.168.0.1 
+
+ELSAG OPAVM 
+
+AVM SIS 
+
+Conflitto di indirizzi sui mezzi a doppia cabina. Da 
+risolvere. 
+
+192.168.0.3 
+
+AVM DIVITECH 
+
+AVM DIVITECH 
+
+Mezzi extraurbani OTX 
+
+192.168.0.4 
+
+Digigroup M3C 
+
+Diagnostica 
+
+Vetture serie 800 
+
+192.168.0.5 
+
+FMS converter 
+
+Diagnostica 
+
+Vetture serie 3300 (urbane) 
+Vetture serie 320-372, 230-243 1150-1168 (extraurb.) 
+
+192.168.0.6÷7 
+
+Digigroup iMos 
+
+Infoutenza 
+
+Attualmente 192.168.0.6 
+
+192.168.0.8 
+
+Ameli LED 
+
+Infoutenza 
+
+ 
+
+192.168.0.9 
+
+Ameli Vigila 
+
+Videosorveglianza 
+
+ 
+
+192.168.0.10 
+
+Riservato 
+
+AVM SIS 
+
+ 
+
+192.168.0.12÷13 
+
+Ameli SVI_bus 
+
+Infoutenza 
+
+Raccomandato 192.168.0.12 (vetture serie 800) 
+
+192.168.0.14÷15 
+
+NVR 
+
+Videosorveglianza 
+
+Nell’ipotesi di massimo 2 registratori NVR 
+
+192.168.0.16÷31 
+
+Telecamere IP 
+
+Videosorveglianza 
+
+Nell’ipotesi di massimo 16 telecamere IP 
+
+192.168.0.32÷47 
+
+Validatori 
+
+BIP 
+
+ 
+
+192.168.0.48 
+
+ELSAG INSIS 
+
+BIP 
+
+Computer BIP con funzioni GATEWAY 
+
+192.168.0.50 
+
+AVM AESYS 
+
+AVM AESYS 
+
+Mezzi extraurbani 
+
+
+
+
+Indirizzo 
+
+Dispositivo 
+
+Applicazione 
+
+Note 
+
+192.168.0.60÷74 
+
+EMV 
+
+EMV 
+
+Apparati per pagamenti bancari (nei validatori) 
+
+192.168.0.100 
+
+ELSAG VCR 
+
+Videosorveglianza 
+
+Videoregistratore attuale (legacy) 
+
+192.168.0.128÷159 
+
+ 
+
+DHCP 
+
+Da confermare l’attivazione del servizio DHCP a bordo 
+
+192.168.0.200 
+
+Riservato 
+
+AVM SIS 
+
+ 
+
+192.168.0.208÷223 
+
+ 
+
+Manutenzione 
+
+Liberi per indirizzamento statico / compatibile con attuali 
+PC di manutenzione videosorveglianza (192.168.0.213) 
+
+192.168.0.253 
+
+Moxa 
+
+Managed switch 
+
+ 
+
+
+
+ 
+
+Come già suggerito nel par. Errore. L'origine riferimento non è stata trovata. del documento 
+principale, per i range di indirizzi contigui si consiglia di assegnare IP via via crescenti 
+all’allontanarsi dalla cabina di guida principale. 
+
+ 
+
+ 
+
+Nota: il qui presente piano di indirizzamento è da considerarsi IN EVOLUZIONE. Si richiede in 
+ogni caso che i dispositivi installati a bordo permettano la riconfigurazione in modo semplice e 
+senza limitazioni alla funzionalità degli apparati stessi. 
+
+
+Appendice: codici aziende TPL BIP 
+
+Valore 
+
+Azienda 
+
+0 
+
+Riservato 
+
+1 
+
+GRUPPO TRASPORTI TORINESI SpA 
+
+2 
+
+A.C.T.P. Srl 
+
+3 
+
+r.f.u. 
+
+4 
+
+ALLASIA Autolinee Srl 
+
+5 
+
+A.M.C. SpA – Casale Monferrato 
+
+6 
+
+ARFEA SpA 
+
+7 
+
+ASTI SERVIZI PUBBLICI SpA 
+
+8 
+
+ATAP SpA 
+
+9 
+
+A.T.A.V. VIGO SpA 
+
+10 
+
+A.T.I. Trasporti Interurbani SpA 
+
+11 
+
+AUTOSTRADALE 
+
+12 
+
+AVIOSIBUS S.N.C. 
+
+13 
+
+AMAG Mobilità SpA 
+
+14 
+
+BARANZELLI NATUR Srl 
+
+15 
+
+BELLANDO TOURS Srl 
+
+16 
+
+CAVOURESE SpA 
+
+17 
+
+CHIESA 
+
+18 
+
+C.I.T. SpA 
+
+19 
+
+FOGLIATI Autolinee Srl 
+
+20 
+
+F.lli MORTARA Autolinee 
+
+21 
+
+GELOSOBUS Srl 
+
+22 
+
+GHERRA Srl 
+
+23 
+
+GIACHINO Autolinee Srl 
+
+24 
+
+GIORS Srl 
+
+25 
+
+GUNETTO Autolinee Srl 
+
+26 
+
+CANOVA (ex CANUTO) 
+
+27 
+
+MAESTRI Sas 
+
+28 
+
+MARTOGLIO SpA 
+
+29 
+
+NOVARESE Autoservizi Srl 
+
+30 
+
+NUOVA BECCARIA Srl 
+
+31 
+
+NUOVA BENESE Autolinee Srl 
+
+32 
+
+NUOVA S.A.A.R. Srl 
+
+33 
+
+RATTI TOURS Srl 
+
+34 
+
+r.f.u. 
+
+35 
+
+S.A.C. Srl 
+
+
+
+
+Valore 
+
+Azienda 
+
+36 
+
+SADEM SpA 
+
+37 
+
+r.f.u. 
+
+38 
+
+SAV Autolinee Srl 
+
+39 
+
+BUS COMPANY (ex SEAG Srl) 
+
+40 
+
+S.T.A.C. Srl (comprende STAT) 
+
+41 
+
+SUN SpA 
+
+42 
+
+r.f.u. 
+
+43 
+
+TRENITALIA SpA 
+
+44 
+
+VALBORBERA Autolinee 
+
+45 
+
+VALLE PESIO Autolinee Srl 
+
+46 
+
+V.C.O. TRASPORTI Srl 
+
+47 
+
+RIVIERA TRASPORTI (ex VIANI Autolinee). 
+
+48 
+
+VIGO AUTOINDUSTRIALE 
+
+49 
+
+V.I.T.A. SpA 
+
+50 
+
+REGIONE PIEMONTE 
+
+51 
+
+COMAZZI Autoservizi 
+
+52 
+
+SOCIETA` TRASPORTI NOVARESI 
+
+53 
+
+5T Srl 
+
+54 ÷ 60 
+
+Riservato 
+
+61 
+
+BOUCHARD 
+
+62 
+
+FURNO 
+
+63 
+
+GTT EXTRATO 
+
+64 
+
+MARLETTI 
+
+65 
+
+in assegnazione 
+
+66 
+
+S.T.A.A.V. S.r.l. 
+
+67 
+
+SEREN SNC 
+
+68 
+
+VI-MU 
+
+69 
+
+A.M.C. Urbano (Torino) 
+
+70 
+
+GRANDABUS 
+
+71 
+
+Riservato EXTRATO 
+
+72 
+
+SAAMO S.p.A. – Società Autolinee Alto Monferrato Ovadese 
+
+73 
+
+FONTANETO Società Autoservizi 
+
+74 
+
+PIRAZZI Autoservizi 
+
+75 
+
+STP Srl 
+
+76 
+
+Autolinee ACQUESI Srl 
+
+77 
+
+RUSSO GIUSEPPE Autoservizi 
+
+ 
+
+ 
+
+
+
+
+Appendice: Regole di routing 
+
+App 
+
+Direzione 
+
+Protocol 
+
+Input 
+
+Output 
+
+source IP 
+
+source 
+port 
+
+dest IP/IF 
+
+dest 
+port 
+
+dest IP 
+
+dest 
+port 
+
+Divitech 
+AVM 
+
+Bordo-
+Terra 
+
+TCP 
+
+any 
+
+any 
+
+192.168.0.48 
+
+7001 
+
+172.17.1.33 
+
+7001 
+
+Bordo-
+Terra 
+
+TCP 
+
+any 
+
+any 
+
+192.168.0.48 
+
+7999 
+
+172.17.1.33 
+
+7999 
+
+Bordo-
+Terra 
+
+TCP 
+
+any 
+
+any 
+
+192.168.0.48 
+
+8080 
+
+172.17.1.33 
+
+8080 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Ameli 
+info/droid 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs 
+
+10022 
+
+192.168.0.12 
+
+22 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Ameli 
+NVR 
+
+Terra-
+Bordo 
+
+UDP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+50001 
+
+192.168.0.15 
+
+50001 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+554 
+
+192.168.0.16 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+555 
+
+192.168.0.17 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+556 
+
+192.168.0.18 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+557 
+
+192.168.0.19 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+558 
+
+192.168.0.20 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+559 
+
+192.168.0.21 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+560 
+
+192.168.0.22 
+
+554 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+561 
+
+192.168.0.23 
+
+554 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Ameli 
+NVR 
+
+Terra-
+Bordo 
+
+TCP 
+
+any 
+
+any 
+
+Gprs + WiFi 
+
+21 
+
+192.168.0.15 
+
+21 
+
+Bordo-
+Terra 
+
+TCP 
+
+192.168.0.15 
+
+20 
+
+Server Ameli 
+
+- 
+
+Server Ameli 
+
+- 
+
+
+
+ 
+
+
