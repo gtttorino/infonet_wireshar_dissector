@@ -3,7 +3,7 @@ local infonet_info =
     version = "0.0.1",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
-    repository = "https://github.com/avacee/xp11-Lua-Dissector"
+    repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
 }
 
 set_plugin_info(infonet_info);
