@@ -1,5 +1,5 @@
 local infonet_info = {
-    version = "0.8.6",
+    version = "0.8.7",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
@@ -21,6 +21,16 @@ local VALS_AREA = {
     [2] = "Uscita area di fermata",
     [3] = "Fermata in corso",
     [4] = "In area di fermata"
+}
+
+local VALS_AVM = {
+    [0] = "OPAVM (GTT/Leonardo/Mizar)",
+    [1] = "AESYS (ExtraTo)",
+    [2] = "Divitech",
+    [3] = "OPAVM (Leonardo)",
+    [4] = "AEP",
+    [6] = "TEQ",
+    [99] = "Altro / non significativo"
 }
 
 -- INFONET2
@@ -156,7 +166,7 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
         root_tree:add(infonet2_company, company);
 
         local avm = tvb:range(86):range(0, 3):stringz();
-        root_tree:add(infonet2_avm, avm);
+        root_tree:add(infonet2_avm, VALS_AVM[tonumber(avm)]);
 
         local status = tvb:range(89, 1);
         root_tree:add(infonet2_status, status);
