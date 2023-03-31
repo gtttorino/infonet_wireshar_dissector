@@ -1,5 +1,5 @@
 local infonet_info = {
-    version = "0.8.5",
+    version = "0.8.6",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
@@ -13,6 +13,14 @@ infonet.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
 local VALS_BOOL = {
     [0] = "False",
     [1] = "True"
+}
+
+local VALS_AREA = {
+    [0] = "Non in area di fermata",
+    [1] = "Ingresso area di fermata",
+    [2] = "Uscita area di fermata",
+    [3] = "Fermata in corso",
+    [4] = "In area di fermata"
 }
 
 -- INFONET2
@@ -31,7 +39,7 @@ local infonet2_shift = ProtoField.string("infonet2.infonet2.shift", "Turno");
 local infonet2_dest = ProtoField.string("infonet2.dest", "FermataCapolinea");
 local infonet2_current = ProtoField.string("infonet2.current", "FermataCorrente");
 local infonet2_next = ProtoField.string("infonet2.next", "FermataProssima");
-local infonet2_area = ProtoField.bytes("infonet2.area", "StatoAreaFermata");
+local infonet2_area = ProtoField.string("infonet2.area", "StatoAreaFermata");
 local infonet2_vehicle = ProtoField.uint16("infonet2.vehicle", "Veicolo");
 local infonet2_direction = ProtoField.char("infonet2.direction", "Direzione");
 local infonet2_driver = ProtoField.uint32("infonet2.driver", "Autista");
@@ -114,6 +122,12 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
         offset = 69;
     end
     local area = tvb:range(offset):range(0, 1);
+    area = area:int();
+    if (area < 0) then
+        area = "Informazione non disponibile";
+    else
+        area = VALS_AREA[area];
+    end
     root_tree:add(infonet2_area, area);
 
     offset = 75;
