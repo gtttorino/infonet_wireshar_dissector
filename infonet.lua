@@ -33,6 +33,20 @@ local VALS_AVM = {
     [99] = "Altro / non significativo"
 }
 
+local VALS_STATUS = {
+    [0] = "Veicolo in servizio",
+    [1] = "Capolinea",
+    [2] = "Entrata in servizio",
+    [3] = "Uscita dal servizio",
+    [4] = "Manutenzione/Deposito/Altro",
+    [6] = "Spegnimento"
+}
+
+local VALS_COMPANY = {
+    [0] = "Sconosciuta",
+    [1] = "GTT"
+}
+
 -- INFONET2
 local infonet2 = Proto("infonet2", "InfoNET2");
 infonet2.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
@@ -55,7 +69,7 @@ local infonet2_direction = ProtoField.char("infonet2.direction", "Direzione");
 local infonet2_driver = ProtoField.uint32("infonet2.driver", "Autista");
 local infonet2_company = ProtoField.string("infonet2.company", "Azienda");
 local infonet2_avm = ProtoField.string("infonet2.avm", "AVM");
-local infonet2_status = ProtoField.int8("infonet2.status", "StatoVeicolo");
+local infonet2_status = ProtoField.string("infonet2.status", "StatoVeicolo");
 local infonet2_timing = ProtoField.int16("infonet2.timing", "AnticipoRitardo");
 local infonet2_trip = ProtoField.string("infonet2.trip", "Corsa");
 infonet2.fields = { -- infonet2_header,
@@ -163,12 +177,25 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
 
     if (inf2 == true) then
         local company = tvb:range(82):range(0, 4):stringz();
+        company = tonumber(company);
+        if (company < 0) then
+            company = "Sconosciuta";
+        else
+            company = VALS_COMPANY[company];
+        end
         root_tree:add(infonet2_company, company);
 
         local avm = tvb:range(86):range(0, 3):stringz();
         root_tree:add(infonet2_avm, VALS_AVM[tonumber(avm)]);
 
         local status = tvb:range(89, 1);
+        print("STATUS: " .. status);
+        status = status:int();
+        if (status < 0) then
+            status = "Sconosciuto";
+        else
+            status = VALS_STATUS[status];
+        end
         root_tree:add(infonet2_status, status);
 
         local timing = tvb:range(90, 2);
