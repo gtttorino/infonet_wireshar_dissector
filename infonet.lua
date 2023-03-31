@@ -49,7 +49,15 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
 
     print("enter function dissectINFONET2");
 
-    pinfo.cols.info = "infonet-INFO_NET2";
+    local inf2 = true;
+    if (tvb:range(1, 10):stringz():sub(-1) ~= "2") then
+        inf2 = false;
+    end
+    if (inf2 == true) then
+        pinfo.cols.info = "infonet-INFO_NET2";
+    else
+        pinfo.cols.info = "infonet-INFO_NET";
+    end
 
     local dataora = tvb:range(17):range(0, 4);
     root_tree:add_le(infonet2_datetime, dataora);
@@ -67,43 +75,84 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
 
     local loc = tvb:range(32):range(0, 1);
     root_tree:add(infonet2_loc, loc);
+
     local line = tvb:range(33):range(0, 6):stringz();
+    if (inf2 == false) then
+        line = tvb:range(33):range(0, 4):stringz();
+    end
     root_tree:add(infonet2_line, line);
+
     local shift = tvb:range(40):range(0, 6):stringz();
+    if (inf2 == false) then
+        shift = tvb:range(38):range(0, 4):stringz();
+    end
     root_tree:add(infonet2_shift, shift);
 
-    local dest = tvb:range(47):range(0, 8):stringz();
+    local offset = 47;
+    if (inf2 == false) then
+        offset = 42;
+    end
+    local dest = tvb:range(offset):range(0, 8):stringz();
     root_tree:add(infonet2_dest, dest);
-    local current = tvb:range(56):range(0, 8):stringz();
+
+    offset = 56;
+    if (inf2 == false) then
+        offset = 51;
+    end
+    local current = tvb:range(offset):range(0, 8):stringz();
     root_tree:add(infonet2_current, current);
-    local next = tvb:range(65):range(0, 8):stringz();
+
+    offset = 65;
+    if (inf2 == false) then
+        offset = 60;
+    end
+    local next = tvb:range(offset):range(0, 8):stringz();
     root_tree:add(infonet2_next, next);
-    local area = tvb:range(74):range(0, 1);
+
+    offset = 74;
+    if (inf2 == false) then
+        offset = 69;
+    end
+    local area = tvb:range(offset):range(0, 1);
     root_tree:add(infonet2_area, area);
 
-    local veicolo = tvb:range(75):range(0, 2);
+    offset = 75;
+    if (inf2 == false) then
+        offset = 70;
+    end
+    local veicolo = tvb:range(offset):range(0, 2);
     root_tree:add_le(infonet2_vehicle, veicolo);
 
-    local direz = tvb:range(77):range(0, 1);
+    offset = 77;
+    if (inf2 == false) then
+        offset = 72;
+    end
+    local direz = tvb:range(offset):range(0, 1);
     root_tree:add(infonet2_direction, direz);
 
-    local driver = tvb:range(78):range(0, 4);
+    offset = 78;
+    if (inf2 == false) then
+        offset = 73;
+    end
+    local driver = tvb:range(offset):range(0, 4);
     root_tree:add_le(infonet2_driver, driver);
 
-    local company = tvb:range(82):range(0, 4):stringz();
-    root_tree:add(infonet2_company, company);
+    if (inf2 == true) then
+        local company = tvb:range(82):range(0, 4):stringz();
+        root_tree:add(infonet2_company, company);
 
-    local avm = tvb:range(86):range(0, 3):stringz();
-    root_tree:add(infonet2_avm, avm);
+        local avm = tvb:range(86):range(0, 3):stringz();
+        root_tree:add(infonet2_avm, avm);
 
-    local status = tvb:range(89, 1);
-    root_tree:add(infonet2_status, status);
+        local status = tvb:range(89, 1);
+        root_tree:add(infonet2_status, status);
 
-    local timing = tvb:range(90, 2);
-    root_tree:add(infonet2_timing, timing);
+        local timing = tvb:range(90, 2);
+        root_tree:add(infonet2_timing, timing);
 
-    local corsa = tvb:range(92):range(0, 8):stringz();
-    root_tree:add(infonet2_trip, corsa);
+        local corsa = tvb:range(92):range(0, 8):stringz();
+        root_tree:add(infonet2_trip, corsa);
+    end
 
     return true;
 end
@@ -210,6 +259,7 @@ end
 
 local subdissectors = {
     INFO_NET2 = dissectINFONET2,
+    INFO_NET = dissectINFONET2,
     INFO_BIP = dissectINFOBIP1,
     INFO_BIP2 = dissectINFOBIP2
 
@@ -270,7 +320,7 @@ function infonet.dissector(buffer, pinfo, tree)
     local header = buffer(1, 10):stringz();
     pinfo.cols.protocol = "infonet." .. header:lower();
 
-    if header == "INFO_NET2" then
+    if header == "INFO_NET2" or header == "INFO_NET" then
         infonet = infonet2;
     end
     if header == "INFO_BIP" or header == "INFO_BIP" then
