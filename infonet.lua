@@ -1,5 +1,5 @@
 local infonet_info = {
-    version = "1.0.8",
+    version = "1.1.2",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
@@ -314,10 +314,6 @@ infopax.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
 local infopax_timestamp = ProtoField.uint32("infopax.timestamp", "TimeStamp");
 local infopax_doorStatus = ProtoField.uint8("infopax.doorstatus", "DoorStatus");
 local infopax_doorId = ProtoField.uint8("infopax.doorid", "DoorID");
-local infopax_line = ProtoField.string("infopax.line", "Linea");
-local infopax_shift = ProtoField.string("infopax.shift", "Turno");
-local infopax_trip = ProtoField.string("infopax.trip", "Corsa");
-local infopax_dest = ProtoField.string("infopax.dest", "FermataCapolinea");
 local infopax_current = ProtoField.string("infopax.current", "FermataCorrente");
 local infopax_vehicle = ProtoField.uint16("infopax.vehicle", "Veicolo");
 local infopax_paxIn = ProtoField.int16("infopax.paxin", "PaxIn");
@@ -326,24 +322,25 @@ local infopax_paxOnBoard = ProtoField.int16("infopax.paxonboard", "PaxOnBoard");
 local infopax_sensorType = ProtoField.int8("infopax.sensortype", "SensorType");
 local infopax_sensorID = ProtoField.int8("infopax.sensorid", "SensorID");
 local infopax_num = ProtoField.int8("infopax.num", "Num");
-local infopax_value = ProtoField.double("infopax.value", "Value");
+local infopax_rfu = ProtoField.float("infopax.rfu", "RFU");
 local infopax_appStatus = ProtoField.uint8("infopax.appstatus", "AppStatus");
 local infopax_sensorStatus = ProtoField.string("infopax.sensorstatus", "SensorStatus");
+local infopax_paramType = ProtoField.uint16("infopax.paramtype", "ParamType");
+local infopax_paramValue = ProtoField.float("infopax.paramvalue", "ParamValue");
+local infopax_vendorId = ProtoField.string("infopax.vendorid", "VendorID");
 
-infopax.fields = {infopax_timestamp, infopax_doorStatus, infopax_doorId, infopax_line, infopax_shift, infopax_trip,
-                  infopax_dest, infopax_current, infopax_vehicle, infopax_paxIn, infopax_paxOut, infopax_paxOnBoard,
-                  infopax_sensorType, infopax_sensorID, infopax_num, infopax_value, infopax_appStatus,
-                  infopax_sensorStatus}
+infopax.fields = {infopax_timestamp, infopax_doorStatus, infopax_doorId, infopax_current, infopax_vehicle,
+                  infopax_paxIn, infopax_paxOut, infopax_paxOnBoard, infopax_sensorType, infopax_sensorID, infopax_num,
+                  infopax_rfu, infopax_appStatus, infopax_sensorStatus, infopax_paramType, infopax_paramValue,
+                  infopax_vendorId}
 
 local function dissectINFOPAX(tvb, pinfo, root_tree)
-
-    -- !!to be updpate for infonet doc v.4.5.0!!
 
     print("enter function dissectINFOPAX");
 
     pinfo.cols.info = "infonet-INFO_PAX";
 
-    --[[     local timestamp = tvb:range(17, 4);
+    local timestamp = tvb:range(17, 4);
     local doorStatus = tvb:range(21, 1);
     local doorId = tvb:range(22, 1);
     local current = tvb:range(54):range(0, 8):stringz();
@@ -354,36 +351,16 @@ local function dissectINFOPAX(tvb, pinfo, root_tree)
     local sensorType = tvb:range(71, 1);
     local sensorID = tvb:range(72, 1);
     local num = tvb:range(73, 1);
-    local value = tvb:range(74):range(0, 4);
+    local rfu = tvb:range(74):range(0, 4);
     local appStatus = tvb:range(78, 1);
-    local sensorStatus = tvb:range(79):range(0, 1):stringz(); ]]
+    local sensorStatus = tvb:range(79):range(0, 1):stringz();
+    local paramType = tvb:range(81, 2);
+    local paramValue = tvb:range(83, 2);
+    local vendorId = tvb:range(85, 3);
 
-    local dataora = tvb:range(17):range(0, 4);
-    local doorStatus = tvb:range(21, 1);
-    -- local doorId = tvb:range(22, 1);
-    local line = tvb:range(22):range(0, 6);
-    local shift = tvb:range(29, 7);
-    local trip = tvb:range(36, 9);
-    local dest = tvb:range(45, 9);
-    local current = tvb:range(54, 9);
-    local vehicle = tvb:range(63, 2);
-    local paxIn = tvb:range(65, 2);
-    local paxOut = tvb:range(67, 2);
-    local paxOnBoard = tvb:range(69, 2);
-    local sensorType = tvb:range(71, 1);
-    local sensorID = tvb:range(72, 1);
-    local num = tvb:range(73, 1);
-    -- local value = tvb:range(74,2);
-    local appStatus = tvb:range(76, 1);
-    local sensorStatus = tvb:range(77, 1);
-
-    root_tree:add_le(infopax_timestamp, dataora);
+    root_tree:add_le(infopax_timestamp, timestamp);
     root_tree:add(infopax_doorStatus, doorStatus);
-    -- root_tree:add(infopax_doorId, doorId);
-    root_tree:add(infopax_line, line);
-    root_tree:add(infopax_shift, shift);
-    root_tree:add(infopax_trip, trip);
-    root_tree:add(infopax_dest, dest);
+    root_tree:add(infopax_doorId, doorId);
     root_tree:add(infopax_current, current);
     root_tree:add_le(infopax_vehicle, vehicle);
     root_tree:add_le(infopax_paxIn, paxIn);
@@ -392,9 +369,12 @@ local function dissectINFOPAX(tvb, pinfo, root_tree)
     root_tree:add(infopax_sensorType, sensorType);
     root_tree:add(infopax_sensorID, sensorID);
     root_tree:add(infopax_num, num);
-    -- root_tree:add(infopax_value, value);
+    root_tree:add(infopax_rfu, rfu);
     root_tree:add(infopax_appStatus, appStatus);
     root_tree:add(infopax_sensorStatus, sensorStatus);
+    root_tree:add(infopax_paramType, paramType);
+    root_tree:add(infopax_paramValue, paramValue);
+    root_tree:add(infopax_vendorId, vendorId);
 
     return true;
 end
@@ -445,7 +425,7 @@ local function ValidatePacket(buffer, pinfo)
         print("LEN INFO_BIP: FALSE");
         return false;
     end
-    if header == "INFO_PAX" and length ~= 79 then
+    if header == "INFO_PAX" and length ~= 90 then
         print("LEN INFO_PAX: FALSE");
         return false;
     end
