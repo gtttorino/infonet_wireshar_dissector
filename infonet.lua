@@ -1,5 +1,5 @@
 local infonet_info = {
-    version = "1.1.2",
+    version = "1.1.3",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
@@ -30,6 +30,9 @@ local VALS_AVM = {
     [3] = "OPAVM (Leonardo)",
     [4] = "AEP",
     [6] = "TEQ",
+    [7] = "SWARCO EXTRA",
+    [8] = "DIVITECH",
+    [9] = "AMELI",
     [99] = "Altro / non significativo"
 }
 
