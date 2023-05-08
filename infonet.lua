@@ -1,5 +1,5 @@
 local infonet_info = {
-    version = "1.1.3",
+    version = "1.1.7",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
@@ -24,15 +24,13 @@ local VALS_AREA = {
 }
 
 local VALS_AVM = {
-    [0] = "OPAVM (GTT/Leonardo/Mizar)",
-    [1] = "AESYS (ExtraTo)",
-    [2] = "Divitech",
-    [3] = "OPAVM (Leonardo)",
-    [4] = "AEP",
+    [0] = "Riservato",
+    [1] = "OPAVM (GTT/Leonardo/Mizar)",
+    [2] = "AESYS (ExtraTo)",
+    [3] = "Divitech",
+    [4] = "OPAVM (Leonardo)",
+    [5] = "AEP",
     [6] = "TEQ",
-    [7] = "SWARCO EXTRA",
-    [8] = "DIVITECH",
-    [9] = "AMELI",
     [99] = "Altro / non significativo"
 }
 
@@ -46,9 +44,89 @@ local VALS_STATUS = {
 }
 
 local VALS_COMPANY = {
-    [0] = "Sconosciuta",
-    [1] = "GTT"
+    [0] = "Riservato",
+    [1] = "GRUPPO TRASPORTI TORINESI SpA",
+    [2] = "A.C.T.P. Srl",
+    [3] = "r.f.u.",
+    [4] = "ALLASIA Autolinee Srl",
+    [5] = "A.M.C. SpA – Casale Monferrato",
+    [6] = "ARFEA SpA",
+    [7] = "ASTI SERVIZI PUBBLICI SpA",
+    [8] = "ATAP SpA",
+    [9] = "A.T.A.V. VIGO SpA",
+    [10] = "A.T.I. Trasporti Interurbani SpA",
+    [11] = "AUTOSTRADALE",
+    [12] = "AVIOSIBUS S.N.C.",
+    [13] = "AMAG Mob. SpA",
+    [14] = "BARANZELLI NATUR Srl",
+    [15] = "BELLANDO TOURS Srl",
+    [16] = "CAVOURESE SpA",
+    [17] = "CHIESA",
+    [18] = "C.I.T. SpA",
+    [19] = "FOGLIATI Autolinee Srl",
+    [20] = "F.lli MORTARA Autolinee",
+    [21] = "GELOSOBUS Srl",
+    [22] = "GHERRA Srl",
+    [23] = "GIACHINO Autolinee Srl",
+    [24] = "GIORS Srl",
+    [25] = "GUNETTO Autolinee Srl",
+    [26] = "CANOVA (ex CANUTO)",
+    [27] = "MAESTRI Sas",
+    [28] = "MARTOGLIO SpA",
+    [29] = "NOVARESE Autoservizi Srl",
+    [30] = "NUOVA BECCARIA Srl",
+    [31] = "NUOVA BENESE Autolinee Srl",
+    [32] = "NUOVA S.A.A.R. Srl",
+    [33] = "RATTI TOURS Srl",
+    [34] = "r.f.u.",
+    [35] = "S.A.C. Srl",
+    [36] = "SADEM SpA",
+    [37] = "r.f.u.",
+    [38] = "SAV Autolinee Srl",
+    [39] = "BUS COMPANY (ex SEAG Srl)",
+    [40] = "S.T.A.C. Srl (comprende STAT)",
+    [41] = "SUN SpA",
+    [42] = "r.f.u.",
+    [43] = "TRENITALIA SpA",
+    [44] = "VALBORBERA Autolinee",
+    [45] = "VALLE PESIO Autolinee Srl",
+    [46] = "V.C.O. TRASPORTI Srl",
+    [47] = "RIVIERA TRASPORTI (ex VIANI Autolinee).",
+    [48] = "VIGO AUTOINDUSTRIALE",
+    [49] = "V.I.T.A. SpA",
+    [50] = "REGIONE PIEMONTE",
+    [51] = "COMAZZI Autoservizi",
+    [52] = "SOC. TRASPORTI NOVARESI",
+    [53] = "5T Srl",
+    [54] = "Riservato",
+    [55] = "Riservato",
+    [56] = "Riservato",
+    [57] = "Riservato",
+    [58] = "Riservato",
+    [59] = "Riservato",
+    [60] = "Riservato",
+    [61] = "BOUCHARD",
+    [62] = "FURNO",
+    [63] = "GTT EXTRATO",
+    [64] = "MARLETTI",
+    [65] = "in assegnazione",
+    [66] = "S.T.A.A.V. S.r.l.",
+    [67] = "SEREN SNC",
+    [68] = "VI-MU",
+    [69] = "A.M.C. Urbano (Torino)",
+    [70] = "GRANDABUS",
+    [71] = "Riservato EXTRATO",
+    [72] = "SAAMO S.p.A",
+    [73] = "FONTANETO Società Autoservizi",
+    [74] = "PIRAZZI Autoservizi",
+    [75] = "STP Srl",
+    [76] = "Autolinee ACQUESI Srl",
+    [77] = "RUSSO GIUSEPPE Autoservizi"
 }
+
+local function isempty(s)
+    return s == nil or s == ''
+end
 
 -- INFONET2
 local infonet2 = Proto("infonet2", "InfoNET2");
@@ -180,8 +258,11 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
 
     if (inf2 == true) then
         local company = tvb:range(82):range(0, 4):stringz();
+        if isempty(company) then
+            company = -1;
+        end
         company = tonumber(company);
-        if (company < 0) then
+        if ((company < 0) or (company > 77)) then
             company = "Sconosciuta";
         else
             company = VALS_COMPANY[company];
@@ -189,7 +270,16 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
         root_tree:add(infonet2_company, company);
 
         local avm = tvb:range(86):range(0, 3):stringz();
-        root_tree:add(infonet2_avm, VALS_AVM[tonumber(avm)]);
+        if isempty(avm) then
+            avm = -1;
+        end
+        avm = tonumber(avm);
+        if ((avm < 0) or (avm > 6)) then
+            avm = "Sconosciuta";
+        else
+            avm = VALS_AVM[avm];
+        end
+        root_tree:add(infonet2_avm, avm);
 
         local status = tvb:range(89, 1);
         print("STATUS: " .. status);
