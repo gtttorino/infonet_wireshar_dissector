@@ -448,8 +448,8 @@ local function dissectINFOPAX(tvb, pinfo, root_tree)
     local appStatus = tvb:range(78, 1);
     local sensorStatus = tvb:range(79):range(0, 1):stringz();
     local paramType = tvb:range(81, 2);
-    local paramValue = tvb:range(83, 2);
-    local vendorId = tvb:range(85, 3);
+    local paramValue = tvb:range(83, 4);
+    local vendorId = tvb:range(87, 3);
 
     root_tree:add_le(infopax_timestamp, timestamp);
     root_tree:add(infopax_doorStatus, doorStatus);
