@@ -31,8 +31,8 @@ local VALS_AVM = {
     [4] = "OPAVM (Leonardo)",
     [5] = "AEP",
     [6] = "TEQ",
-    [9] = "SWARCO NEXT"
-    [10] = "SWARCO NEXT EXTRA"
+    [9] = "SWARCO NEXT",
+    [10] = "SWARCO NEXT EXTRA",
     [99] = "Altro / non significativo"
 }
 
@@ -276,8 +276,8 @@ local function dissectINFONET2(tvb, pinfo, root_tree)
             avm = -1;
         end
         avm = tonumber(avm);
-        if ((avm < 0) or (avm > 6)) then
-            avm = "Sconosciuta";
+        if ((avm < 0) or (avm > 99)) then
+            avm = "Sconosciuto";
         else
             avm = VALS_AVM[avm];
         end
