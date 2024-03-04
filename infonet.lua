@@ -31,6 +31,8 @@ local VALS_AVM = {
     [4] = "OPAVM (Leonardo)",
     [5] = "AEP",
     [6] = "TEQ",
+    [9] = "SWARCO NEXT"
+    [10] = "SWARCO NEXT EXTRA"
     [99] = "Altro / non significativo"
 }
 
