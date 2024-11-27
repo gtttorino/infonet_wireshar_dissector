@@ -1,12 +1,21 @@
 local infonet_info = {
-    version = "1.1.7",
+    version = "1.2.0",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
 }
 
+if gui_enabled() then
+	local splash = TextWindow.new("GTT");
+	splash:set("Per cambiare le porte da utilizzare sui topic del protocoolo INFONET")
+	splash:append(" andare su 'Tools->Set INFO_NET Ports' e imposta le singole porte")
+end
+
 set_plugin_info(infonet_info);
 local pred_port = 52000;
+local pred_port_bip = 52000;
+local pred_port_pax = 54000;
+
 local infonet = Proto("infonet", "InfoNET");
 infonet.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
 
@@ -129,6 +138,44 @@ local VALS_COMPANY = {
 local function isempty(s)
     return s == nil or s == ''
 end
+
+local function dialog_menu()
+ local function dialog_func(p_infonet,p_infobip,p_infopax)
+	 local win = TextWindow.new("Results");
+	 win:set("DA AVM: " .. p_infonet .. "|")
+	 win:append(" DA BIGLIETTAZIONE: " .. p_infobip)
+	 win:append(" | DA CONT: PASSEGGERI: " .. p_infopax .. " .");
+	 
+	 if isempty(p_infonet) == true then
+		pred_port = p_infonet;
+	 end
+	 
+	 if isempty(p_infobip) == true  then
+		pred_port_bip = p_infobip;
+	 end
+	 
+	 if isempty(p_infopax) == true then
+		pred_port_pax = p_infopax;
+	 end
+	 
+	 
+ end
+
+ new_dialog("Porte INFONET",dialog_func,"INFO_NET (AVM)","INFO_BIP (BIGL.)","INFO_PAX (Cont.Pass.)")
+end
+
+-- optional 3rd parameter to register_menu.
+-- See http://www.wireshark.org/docs/wsug_html_chunked/wsluarm_modules.html
+-- If omitted, defaults to MENU_STAT_GENERIC. Other options include:
+-- MENU_STAT_UNSORTED (Statistics),
+-- MENU_STAT_GENERIC (Statistics, first section),
+-- MENU_STAT_CONVERSATION (Statistics/Conversation List),
+-- MENU_STAT_ENDPOINT (Statistics/Endpoint List),
+-- MENU_STAT_RESPONSE (Statistics/Service Response Time),
+-- MENU_STAT_TELEPHONY (Telephony),
+-- MENU_ANALYZE_UNSORTED (Analyze),
+-- MENU_ANALYZE_CONVERSATION (Analyze/Conversation Filter),
+-- MENU_TOOLS_UNSORTED (Tools)
 
 -- INFONET2
 local infonet2 = Proto("infonet2", "InfoNET2");
@@ -305,7 +352,7 @@ end
 
 -- INFOBIP
 local infobip = Proto("infobip", "InfoBIP");
-infobip.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
+infobip.prefs.pred_port = Pref.uint("InfoNET Port", pred_port_bip, "InfoNET port");
 local infobip_timestamp = ProtoField.uint32("infobip.timestamp", "TimeStamp");
 local infobip_applMode = ProtoField.uint8("infobip.applmode", "ApplMode");
 local infobip_applStatus = ProtoField.uint8("infobip.applstatus", "ApplStatus");
@@ -405,7 +452,7 @@ end
 
 -- INFOPAX
 local infopax = Proto("infopax", "InfoPAX");
-infopax.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
+infopax.prefs.pred_port = Pref.uint("InfoNET Port", pred_port_pax, "InfoNET port");
 local infopax_timestamp = ProtoField.uint32("infopax.timestamp", "TimeStamp");
 local infopax_doorStatus = ProtoField.uint8("infopax.doorstatus", "DoorStatus");
 local infopax_doorId = ProtoField.uint8("infopax.doorid", "DoorID");
@@ -500,7 +547,8 @@ local function ValidatePacket(buffer, pinfo)
         print("subdissector: FALSE");
         return false;
     end
-    if pinfo.dst_port ~= pred_port then
+	
+    if pinfo.dst_port ~= pred_port and  pinfo.dst_port ~= pred_port_bip and pinfo.dst_port ~= pred_port_pax then
         print("DEST_PORT: FALSE");
         return false;
     end
@@ -541,7 +589,7 @@ function infonet.dissector(buffer, pinfo, tree)
     if header == "INFO_NET2" or header == "INFO_NET" then
         infonet = infonet2;
     end
-    if header == "INFO_BIP" or header == "INFO_BIP" then
+    if header == "INFO_BIP" or header == "INFO_BIP2" then
         infonet = infobip;
     end
     if header == "INFO_PAX" then
@@ -554,3 +602,12 @@ end
 
 local udp_encap_table = DissectorTable.get("udp.port");
 udp_encap_table:add(infonet.prefs.pred_port, infonet);
+
+local udp_encap_table = DissectorTable.get("udp.port");
+udp_encap_table:add(infobip.prefs.pred_port, infonet);
+
+local udp_encap_table = DissectorTable.get("udp.port");
+udp_encap_table:add(infopax.prefs.pred_port, infonet);
+
+
+register_menu("Set INFO_NET Ports",dialog_menu,MENU_TOOLS_UNSORTED)
