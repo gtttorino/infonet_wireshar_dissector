@@ -1,6 +1,5 @@
 local infonet_info = {
     version = "1.2.0",
-    version = "1.1.9",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
