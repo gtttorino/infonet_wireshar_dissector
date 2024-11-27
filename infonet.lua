@@ -1,5 +1,6 @@
 local infonet_info = {
     version = "1.2.0",
+    version = "1.1.9",
     author = "campagna.a@gtt.to.it",
     description = "This plugin parses UDP packets from Infonet protocol",
     repository = "https://github.com/gtttorino/infonet_wireshark_dissector"
@@ -177,6 +178,16 @@ end
 -- MENU_ANALYZE_CONVERSATION (Analyze/Conversation Filter),
 -- MENU_TOOLS_UNSORTED (Tools)
 
+local function toBits(num, bits)
+    -- returns a table of bits
+    local t={} -- will contain the bits
+    for b=bits,1,-1 do
+        rest=math.fmod(num,2)
+        t[b]=rest
+        num=(num-rest)/2
+    end
+    if num==0 then return t else return {'Not enough bits to represent this number'}end
+end
 -- INFONET2
 local infonet2 = Proto("infonet2", "InfoNET2");
 infonet2.prefs.pred_port = Pref.uint("InfoNET Port", pred_port, "InfoNET port");
@@ -495,11 +506,11 @@ local function dissectINFOPAX(tvb, pinfo, root_tree)
     local num = tvb:range(73, 1);
     local rfu = tvb:range(74):range(0, 4);
     local appStatus = tvb:range(78, 1);
-    local sensorStatus = tvb:range(79):range(0, 1):stringz();
+    local sensorStatus = tvb:range(79, 1);
     local paramType = tvb:range(81, 2);
     local paramValue = tvb:range(83, 4);
     local vendorId = tvb:range(87, 3);
-
+		
     root_tree:add_le(infopax_timestamp, timestamp);
     root_tree:add(infopax_doorStatus, doorStatus);
     root_tree:add(infopax_doorId, doorId);
@@ -513,7 +524,7 @@ local function dissectINFOPAX(tvb, pinfo, root_tree)
     root_tree:add(infopax_num, num);
     root_tree:add(infopax_rfu, rfu);
     root_tree:add(infopax_appStatus, appStatus);
-    root_tree:add(infopax_sensorStatus, sensorStatus);
+    root_tree:add(infopax_sensorStatus, table.concat(toBits(tonumber(tostring(sensorStatus), 8), 8)));
     root_tree:add(infopax_paramType, paramType);
     root_tree:add(infopax_paramValue, paramValue);
     root_tree:add(infopax_vendorId, vendorId);
@@ -532,6 +543,7 @@ local subdissectors = {
 
 local function ValidatePacket(buffer, pinfo)
 
+    print("VERSION:" .. infonet_info.version);
     local length = tonumber(buffer:len());
     print("buffer length: " .. length);
 
