@@ -9,3 +9,4 @@ To check if the script is loaded goto Help -> About -> Plugins. The Type will be
 Ctrl + Shift + L will reload Lua scripts without needing to restart.
 
 The proto declaration is "infonet" and the protofields have been added using the format infonet.$header$".
+![image](https://github.com/user-attachments/assets/4064b941-674b-4737-bbf7-e8433207017b)
